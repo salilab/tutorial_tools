@@ -1,6 +1,6 @@
 # This is a template configuration file for Travis CI, for testing
-# your tutorial regularly. Copy or symlink it to .travis.yml in the
-# top level directory of your tutorial.
+# your tutorial regularly. Copy it to .travis.yml in the top level
+# directory of your tutorial.
 
 sudo: false
 language: python
