@@ -6,7 +6,7 @@ To set up in a new tutorial, run in the top level tutorial directory:
 
     mkdir support
     (cd support && git submodule add https://github.com/salilab/tutorial_tools)
-    ln -sf support/tutorial_tools/travis-template.yml .travis.yml
+    cp support/tutorial_tools/travis-template.yml .travis.yml
 
 Then make a `support/test` directory and put one or more Python test scripts
 there. These should run the tutorial scripts (perhaps with a `--test` flag
