@@ -6,7 +6,16 @@ To set up in a new tutorial, run in the top level tutorial directory:
 
     mkdir support
     (cd support && git submodule add https://github.com/salilab/tutorial_tools)
-    cp support/tutorial_tools/travis-template.yml .travis.yml
+
+Then copy Travis configuration files to the top level directory of your
+tutorial. There are different config files for each git branch:
+
+  - The `master` branch of your tutorial should work with both the latest stable
+    IMP release *and* the nightly build
+    (`cp support/tutorial_tools/travis-master.yml .travis.yml`)
+  - The `develop` branch of your tutorial (if present) only needs to work with
+    the IMP nightly build - this is for developing new tutorials
+    (`cp support/tutorial_tools/travis-develop.yml .travis.yml`)
 
 Then make a `support/test` directory and put one or more Python test scripts
 there. These should run the tutorial scripts (perhaps with a `--test` flag

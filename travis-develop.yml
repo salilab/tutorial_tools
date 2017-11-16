@@ -1,6 +1,6 @@
 # This is a template configuration file for Travis CI, for testing
 # your tutorial regularly. Copy it to .travis.yml in the top level
-# directory of your tutorial.
+# directory of your tutorial, in the develop branch.
 
 sudo: false
 language: python
@@ -9,7 +9,6 @@ python:
   - 3.6
 env:
   - IMP_BRANCH=develop
-  - IMP_BRANCH=master
 install:
   - support/tutorial_tools/setup_travis.sh $HOME/conda $IMP_BRANCH $TRAVIS_PYTHON_VERSION
   - source $HOME/conda/bin/activate python$TRAVIS_PYTHON_VERSION
