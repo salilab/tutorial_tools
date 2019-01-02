@@ -63,13 +63,13 @@ div#main-nav {
     background-image: none;
 }
 
-.sm a {
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
 .sm-dox a,.sm-dox a:focus,.sm-dox a:active,.sm-dox a.highlighted{
     background-image:none;
+}
+
+.sm-dox a,.sm-dox a:focus,.sm-dox a:hover,.sm-dox a:active,.sm-dox a.highlighted{
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .tabs {
