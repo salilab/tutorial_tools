@@ -56,6 +56,8 @@ def make_doxyfile():
                 line = 'PROJECT_NAME = "%s"\n' % title
             elif line.startswith('INPUT '):
                 line = 'INPUT = .\n'
+            elif line.startswith('SEARCHENGINE '):
+                line = 'SEARCHENGINE = NO\n'
             elif line.startswith('IMAGE_PATH '):
                 line = 'IMAGE_PATH = images\n'
             elif line.startswith('HTML_HEADER '):
