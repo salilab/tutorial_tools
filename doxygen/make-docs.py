@@ -43,6 +43,7 @@ def read_yaml_file(fname):
 def make_doxyfile():
     title = get_title()
     pth = '../support/tutorial_tools/doxygen'
+    urltop = 'https://integrativemodeling.org'
     # Generate doxygen template
     p = subprocess.Popen(['doxygen', '-s', '-g', '-'], stdout=subprocess.PIPE,
                          universal_newlines=True)
@@ -64,8 +65,9 @@ def make_doxyfile():
             elif line.startswith('GENERATE_LATEX '):
                 line = 'GENERATE_LATEX = NO\n'
             elif line.startswith('TAGFILES '):
-                line = ('TAGFILES = ref-tags.xml=../../nightly/doc/ref/ '
-                        'manual-tags.xml=../../nightly/doc/manual/\n')
+                line = ('TAGFILES = ref-tags.xml=%s/nightly/doc/ref/ '
+                        'manual-tags.xml=%s/nightly/doc/manual/\n'
+                        % (urltop, urltop))
             fh.write(line)
     ret = p.wait()
     if ret != 0:
