@@ -3,8 +3,8 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title="Main Page"/>
-    <tab type="user" visible="yes" title="Manual" url="../../nightly/doc/manual/"/>
-    <tab type="user" visible="yes" title="Reference Guide" url="../../nightly/doc/ref/"/>
+    <tab type="user" visible="yes" title="Manual" url="https://integrativemodeling.org/nightly/doc/manual/"/>
+    <tab type="user" visible="yes" title="Reference Guide" url="https://integrativemodeling.org/nightly/doc/ref/"/>
     <tab type="pages" visible="no" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
