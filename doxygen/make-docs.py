@@ -6,7 +6,7 @@ Generate documentation for a tutorial.
 To use, make documentation in the tutorial's 'doc' subdirectory as doxygen
 input files (usually in markdown format, .md).
 
-Run this script as
+Run this script from the doc directory, as
 ../support/tutorial_tools/doxygen/make-docs.py
 
 It will generate a doxygen configuration file (Doxyfile) and download
@@ -25,9 +25,17 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
+# Absolute path to the top of the repository
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      '..', '..', '..'))
+
+# Path to this directory (containing doxygen inputs)
+DOXDIR = os.path.abspath(os.path.dirname(__file__))
+
 def get_title():
     """Get the title of the repository by reading the metadata.yaml file"""
-    fnames = ('../support/metadata.yaml', '../metadata/metadata.yaml')
+    fnames = [os.path.join(TOPDIR, subdir, 'metadata.yaml')
+              for subdir in ('support', 'metadata')]
     for fname in fnames:
         if os.path.exists(fname):
             return read_yaml_file(fname)
@@ -42,7 +50,6 @@ def read_yaml_file(fname):
 
 def make_doxyfile():
     title = get_title()
-    pth = '../support/tutorial_tools/doxygen'
     urltop = 'https://integrativemodeling.org'
     # Generate doxygen template
     p = subprocess.Popen(['doxygen', '-s', '-g', '-'], stdout=subprocess.PIPE,
@@ -51,7 +58,7 @@ def make_doxyfile():
     with open('Doxyfile', 'w') as fh:
         for line in p.stdout:
             if line.startswith('LAYOUT_FILE '):
-                line = 'LAYOUT_FILE = %s/layout.xml\n' % pth
+                line = 'LAYOUT_FILE = %s/layout.xml\n' % DOXDIR
             elif line.startswith('PROJECT_NAME '):
                 line = 'PROJECT_NAME = "%s"\n' % title
             elif line.startswith('INPUT '):
@@ -63,9 +70,9 @@ def make_doxyfile():
             elif line.startswith('IMAGE_PATH '):
                 line = 'IMAGE_PATH = images\n'
             elif line.startswith('HTML_HEADER '):
-                line = 'HTML_HEADER = %s/header.html\n' % pth
+                line = 'HTML_HEADER = %s/header.html\n' % DOXDIR
             elif line.startswith('HTML_FOOTER '):
-                line = 'HTML_FOOTER = %s/footer.html\n' % pth
+                line = 'HTML_FOOTER = %s/footer.html\n' % DOXDIR
             elif line.startswith('GENERATE_LATEX '):
                 line = 'GENERATE_LATEX = NO\n'
             elif line.startswith('TAGFILES '):
