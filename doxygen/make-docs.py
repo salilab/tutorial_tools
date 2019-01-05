@@ -26,8 +26,7 @@ except ImportError:
     from urllib2 import urlopen
 
 # Absolute path to the top of the repository
-TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      '..', '..', '..'))
+TOPDIR = os.path.abspath('..')
 
 # Path to this directory (containing doxygen inputs)
 DOXDIR = os.path.abspath(os.path.dirname(__file__))
