@@ -63,6 +63,16 @@ explicit links to IMP objects or to sections in the IMP manual, use
 the `@ref` notation as described in the
 [doxygen manual](http://www.doxygen.nl/manual/markdown.html#md_header_id).
 
+To put example code (e.g. C++, Python, or shell) directly in the text, use the
+[\code and \endcode commands](http://www.doxygen.nl/manual/commands.html#cmdcode).
+To include all or part of a file in the repository, use the
+[\include](http://www.doxygen.nl/manual/commands.html#cmdinclude) or
+[\snippet](http://www.doxygen.nl/manual/commands.html#cmdsnippet) commands,
+respectively. In all cases the code will be syntax highlighted and any
+IMP classes or functions will be automatically linked to the IMP manual.
+(For `\include` or `\snippet` use the full path to the file, relative to
+the top of the repository.)
+
 To format the text, run `../support/tutorial_tools/doxygen/make-docs.py` (it
 requires network access and that you have `doxygen` installed) then open
 `html/index.html` in a web browser.

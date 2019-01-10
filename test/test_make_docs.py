@@ -19,7 +19,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == '-s':
     for name in ('FILE_VERSION_FILTER', 'LAYOUT_FILE', 'PROJECT_NAME',
                  'INPUT', 'SEARCHENGINE', 'TOC_INCLUDE_HEADINGS',
                  'IMAGE_PATH', 'HTML_HEADER', 'HTML_FOOTER', 'GENERATE_LATEX',
-                 'TAGFILES'):
+                 'TAGFILES', 'EXAMPLE_PATH'):
         print("%-23s=" % name)
     sys.exit(0)
 

@@ -74,6 +74,8 @@ def make_doxyfile(tags):
                 line = 'TOC_INCLUDE_HEADINGS = 2\n'
             elif line.startswith('IMAGE_PATH '):
                 line = 'IMAGE_PATH = images\n'
+            elif line.startswith('EXAMPLE_PATH '):
+                line = 'EXAMPLE_PATH = ..\n'
             elif line.startswith('HTML_HEADER '):
                 line = 'HTML_HEADER = %s/header.html\n' % DOXDIR
             elif line.startswith('HTML_FOOTER '):
