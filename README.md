@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/salilab/tutorial_tools.svg?branch=master)](https://travis-ci.org/salilab/tutorial_tools)
+[![codecov](https://codecov.io/gh/salilab/tutorial_tools/branch/master/graph/badge.svg)](https://codecov.io/gh/salilab/tutorial_tools)
+
 This repository contains basic tools that are useful for every IMP
 tutorial. It is intended to be included in each IMP tutorial repository
 as a submodule.
