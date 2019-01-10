@@ -2,9 +2,9 @@ import unittest
 import subprocess
 import os
 import sys
-import tempfile
-import contextlib
+import utils
 import subprocess
+import contextlib
 import shutil
 
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -30,13 +30,6 @@ def make_file(subdir, fname, contents):
 os.mkdir('html')
 make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
 """
-
-@contextlib.contextmanager
-def temporary_directory(dir=None):
-    """Make a temporary directory"""
-    tempd = tempfile.mkdtemp(dir=dir)
-    yield tempd
-    shutil.rmtree(tempd)
 
 @contextlib.contextmanager
 def mock_doxygen(topdir):
@@ -70,7 +63,7 @@ class Tests(unittest.TestCase):
     def test_complete(self):
         """Test simple complete run of make-docs.py"""
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
-        with temporary_directory(TOPDIR) as tmpdir:
+        with utils.temporary_directory(TOPDIR) as tmpdir:
             docdir = _make_docs(tmpdir)
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs], cwd=docdir)
@@ -83,7 +76,7 @@ class Tests(unittest.TestCase):
     def test_custom_branch(self):
         """Test make-docs.py with manually-specified branch"""
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
-        with temporary_directory(TOPDIR) as tmpdir:
+        with utils.temporary_directory(TOPDIR) as tmpdir:
             docdir = _make_docs(tmpdir)
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs, '--branch', 'testbranch'],
