@@ -22,6 +22,7 @@ import subprocess
 import os
 import glob
 import re
+import argparse
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -107,9 +108,11 @@ def get_git_branch():
 def get_git_repo():
     url = subprocess.check_output(['git', 'config', '--get',
                                    'remote.origin.url'],
-                                   universal_newlines=True)
-    m = re.search('\/(\S+)\.git', url)
-    return m.group(1)
+                                   universal_newlines=True).rstrip('\r\n')
+    pth, repo = os.path.split(url)
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+    return repo
 
 def get_pagename(filename, regex):
     with open(filename) as fh:
@@ -129,8 +132,9 @@ def get_page_map():
         m['html/%s.html' % pagename] = md
     return m
 
-def add_github_edit_links():
-    branch = get_git_branch()
+def add_github_edit_links(branch):
+    if branch is None:
+        branch = get_git_branch()
     repo = get_git_repo()
     pagemap = get_page_map()
     for html in glob.glob("html/*.html"):
@@ -153,11 +157,19 @@ def patch_html(filename, repo, source, branch):
         raise ValueError("Failed to patch %s to add GitHub-edit link"
                          % filename)
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Build tutorial docs")
+    parser.add_argument("--branch",
+                  default=None,
+                  help="Override automatically-determined git branch")
+    return parser.parse_args()
+
 def main():
+    args = parse_args()
     make_doxyfile()
     get_tag_files()
     run_doxygen()
-    add_github_edit_links()
+    add_github_edit_links(args.branch)
 
 if __name__ == '__main__':
     main()
