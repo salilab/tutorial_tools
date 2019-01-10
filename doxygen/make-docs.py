@@ -50,9 +50,9 @@ def read_yaml_file(fname):
         if line.startswith('title:'):
             return line.split(':', 1)[1].strip()
 
-def make_doxyfile():
+def make_doxyfile(tags):
+    tagfiles = " ".join(("%s=%s" % (t.xml_filename, t.doctop)) for t in tags)
     title = get_title()
-    urltop = 'https://integrativemodeling.org'
     # Generate doxygen template
     p = subprocess.Popen(['doxygen', '-s', '-g', '-'], stdout=subprocess.PIPE,
                          universal_newlines=True)
@@ -78,24 +78,39 @@ def make_doxyfile():
             elif line.startswith('GENERATE_LATEX '):
                 line = 'GENERATE_LATEX = NO\n'
             elif line.startswith('TAGFILES '):
-                line = ('TAGFILES = ref-tags.xml=%s/nightly/doc/ref/ '
-                        'manual-tags.xml=%s/nightly/doc/manual/\n'
-                        % (urltop, urltop))
+                line = 'TAGFILES = %s\n' % tagfiles
             fh.write(line)
     ret = p.wait()
     if ret != 0:
         raise IOError("doxygen failed")
 
+class TagFile(object):
+    """Represent a doxygen XML tag file"""
+
+    _urltop = 'https://integrativemodeling.org/nightly/doc'
+
+    def __init__(self, doctype):
+        # doctype should be 'manual' or 'ref'
+        self.doctype = doctype
+        # URL for the documentation
+        self.doctop = '%s/%s/' % (self._urltop, doctype)
+
+    def download(self):
+        """Get the tag file from the web site and put it on the local disk"""
+        fname = "%s-tags.xml" % self.doctype
+        response = urlopen('%s/%s' % (self._urltop, fname))
+        with open(fname, 'wb') as fh:
+            fh.write(response.read())
+        # Path to the XML tag file on the local disk
+        self.xml_filename = fname
+
+
 def get_tag_files():
     # todo: handle IMP stable build as well as nightly build
-    for tag in ('manual-tags.xml', 'ref-tags.xml'):
-        get_tag_file(tag)
-
-def get_tag_file(fname):
-    urltop = 'https://integrativemodeling.org/nightly/doc'
-    response = urlopen('%s/%s' % (urltop, fname))
-    with open(fname, 'wb') as fh:
-        fh.write(response.read())
+    tags = [TagFile(doctype) for doctype in ('manual', 'ref')]
+    for t in tags:
+        t.download()
+    return tags
 
 def run_doxygen():
     subprocess.check_call(['doxygen', 'Doxyfile'])
@@ -166,8 +181,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    make_doxyfile()
-    get_tag_files()
+    tags = get_tag_files()
+    make_doxyfile(tags)
     run_doxygen()
     add_github_edit_links(args.branch)
 
