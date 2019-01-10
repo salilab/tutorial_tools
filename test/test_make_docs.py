@@ -80,5 +80,16 @@ class Tests(unittest.TestCase):
             os.unlink(os.path.join(docdir, 'Doxyfile'))
             os.unlink(os.path.join(docdir, 'html', 'index.html'))
 
+    def test_custom_branch(self):
+        """Test make-docs.py with manually-specified branch"""
+        make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
+        with temporary_directory(TOPDIR) as tmpdir:
+            docdir = make_test_docs(tmpdir)
+            with mock_doxygen(tmpdir):
+                subprocess.check_call([make_docs, '--branch', 'testbranch'],
+                                      cwd=docdir)
+            # Check for generated outputs
+            os.unlink(os.path.join(docdir, 'manual-tags.xml'))
+
 if __name__ == '__main__':
     unittest.main()
