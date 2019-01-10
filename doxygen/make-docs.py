@@ -28,6 +28,9 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
+# Latest IMP stable release
+IMP_STABLE_RELEASE = '2.10.0'
+
 # Absolute path to the top of the repository
 TOPDIR = os.path.abspath('..')
 
@@ -87,11 +90,13 @@ def make_doxyfile(tags):
 class TagFile(object):
     """Represent a doxygen XML tag file"""
 
-    _urltop = 'https://integrativemodeling.org/nightly/doc'
+    def __init__(self, doctype, imp_version):
+        # Path to top of IMP documentation
+        self._urltop = 'https://integrativemodeling.org/%s/doc' % imp_version
 
-    def __init__(self, doctype):
         # doctype should be 'manual' or 'ref'
         self.doctype = doctype
+
         # URL for the documentation
         self.doctop = '%s/%s/' % (self._urltop, doctype)
 
@@ -105,9 +110,8 @@ class TagFile(object):
         self.xml_filename = fname
 
 
-def get_tag_files():
-    # todo: handle IMP stable build as well as nightly build
-    tags = [TagFile(doctype) for doctype in ('manual', 'ref')]
+def get_tag_files(imp_version):
+    tags = [TagFile(doctype, imp_version) for doctype in ('manual', 'ref')]
     for t in tags:
         t.download()
     return tags
@@ -148,8 +152,6 @@ def get_page_map():
     return m
 
 def add_github_edit_links(branch):
-    if branch is None:
-        branch = get_git_branch()
     repo = get_git_repo()
     pagemap = get_page_map()
     for html in glob.glob("html/*.html"):
@@ -181,10 +183,16 @@ def parse_args():
 
 def main():
     args = parse_args()
-    tags = get_tag_files()
+    branch = args.branch if args.branch else get_git_branch()
+
+    # master branch of tutorials should work with IMP stable release
+    # (and so should link to stable docs); other branches use nightly
+    imp_version = IMP_STABLE_RELEASE if branch == 'master' else 'nightly'
+
+    tags = get_tag_files(imp_version)
     make_doxyfile(tags)
     run_doxygen()
-    add_github_edit_links(args.branch)
+    add_github_edit_links(branch)
 
 if __name__ == '__main__':
     main()
