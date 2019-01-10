@@ -20,6 +20,8 @@ The documentation can be rebuilt by just running 'doxygen Doxyfile'.
 from __future__ import print_function
 import subprocess
 import os
+import glob
+import re
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -97,10 +99,65 @@ def get_tag_file(fname):
 def run_doxygen():
     subprocess.check_call(['doxygen', 'Doxyfile'])
 
+def get_git_branch():
+    return subprocess.check_output(['git', 'rev-parse', '--abbrev-ref',
+                                    'HEAD'],
+                                   universal_newlines=True).rstrip('\r\n')
+
+def get_git_repo():
+    url = subprocess.check_output(['git', 'config', '--get',
+                                   'remote.origin.url'],
+                                   universal_newlines=True)
+    m = re.search('\/(\S+)\.git', url)
+    return m.group(1)
+
+def get_pagename(filename, regex):
+    with open(filename) as fh:
+        for line in fh:
+            m = regex.search(line)
+            if m:
+                return m.group(1)
+    raise ValueError("Could not determine page name for file %s" % filename)
+
+def get_page_map():
+    m = {}
+    page_name_md_re = re.compile('{#(\S+)}')
+    for md in glob.glob("*.md"):
+        pagename = get_pagename(md, page_name_md_re)
+        if pagename == 'mainpage':
+            pagename = 'index'
+        m['html/%s.html' % pagename] = md
+    return m
+
+def add_github_edit_links():
+    branch = get_git_branch()
+    repo = get_git_repo()
+    pagemap = get_page_map()
+    for html in glob.glob("html/*.html"):
+        if html != 'html/pages.html':
+            patch_html(html, repo, pagemap[html], branch)
+
+def patch_html(filename, repo, source, branch):
+    edit_link = '  $(\'#main-menu\').append(\'<li style="float:right"><div id="github_edit"><a href="https://github.com/salilab/%s/blob/%s/doc/%s"><i class="fab fa-github"></i> Edit on GitHub</a></div></li>\');\n' % (repo, branch, source)
+
+    with open(filename) as fh:
+        contents = fh.readlines()
+    patched = False
+    with open(filename, 'w') as fh:
+        for line in contents:
+            fh.write(line)
+            if line.startswith("  initMenu('',false,false"):
+                patched = True
+                fh.write(edit_link)
+    if not patched:
+        raise ValueError("Failed to patch %s to add GitHub-edit link"
+                         % filename)
+
 def main():
     make_doxyfile()
     get_tag_files()
     run_doxygen()
+    add_github_edit_links()
 
 if __name__ == '__main__':
     main()
