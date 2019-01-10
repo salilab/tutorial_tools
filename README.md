@@ -5,25 +5,71 @@ This repository contains basic tools that are useful for every IMP
 tutorial. It is intended to be included in each IMP tutorial repository
 as a submodule.
 
-To set up in a new tutorial, run in the top level tutorial directory:
+## Setup of a new tutorial
+
+Make a GitHub repository for your tutorial. Then run in the top level
+tutorial directory:
 
     mkdir support
     (cd support && git submodule add https://github.com/salilab/tutorial_tools)
 
-Then copy Travis configuration files to the top level directory of your
-tutorial. There are different config files for each git branch:
+Make a `metadata.yaml` file in the `support` directory to describe the
+tutorial, with contents similar to:
+
+    title: My tutorial
+
+## Branches
 
   - The `master` branch of your tutorial should work with both the latest stable
-    IMP release *and* the nightly build
-    (`cp support/tutorial_tools/travis-master.yml .travis.yml`)
+    IMP release *and* the nightly build.
   - The `develop` branch of your tutorial (if present) only needs to work with
-    the IMP nightly build - this is for developing new tutorials
-    (`cp support/tutorial_tools/travis-develop.yml .travis.yml`)
+    the IMP nightly build - this is for developing new tutorials.
+  - Other branches (if present) are treated like `develop`.
 
-Then make a `support/test` directory and put one or more Python test scripts
+## Testing
+
+Make a `support/test` directory and put one or more Python test scripts
 there. These should run the tutorial scripts (perhaps with a `--test` flag
 to run faster) and check that everything worked correctly. Each file should
 be executable (with a `#!/usr/bin/env python`) first line), and use the
-Python `unittest` module. The `.travis.yml` config file will ensure these tests
-get run every time you change the tutorial using both Python 2 and Python 3,
-and for both the current IMP nightly build and the latest stable release.
+Python `unittest` module.
+
+Then copy a [Travis](https://travis-ci.org/) configuration file to the
+top level directory of your tutorial. For the `master` branch of your
+tutorial, use `cp support/tutorial_tools/travis-master.yml .travis.yml`.
+For other branches such as `develop`, use `travis-develop.yml` instead.
+
+The `.travis.yml` config file will ensure the tutorial tests
+get run every time the tutorial is changed (pushed to GitHub) using both
+Python 2 and Python 3, and for the current IMP nightly build and also the
+latest stable release (if applicable).
+
+## Tutorial text
+
+The actual text of the tutorial should be written using one or more
+files in the `doc` directory. Each should have a `.md` file extension, and
+use [doxygen markdown](http://www.doxygen.nl/manual/markdown.html).
+Give each file a label, using `mainpage` for the main page, as described
+in the [doxygen docs](http://www.doxygen.nl/manual/markdown.html#markdown_dox).
+
+See the existing [IMP coding](https://github.com/salilab/imp_coding_tutorial/tree/master/doc)
+or [PMI2](https://github.com/salilab/imp_tutorial/tree/pmi2/doc)
+tutorials for examples.
+
+Any references to IMP classes in the text will be automatically linked by
+doxygen to the IMP manual (the `master` branch of the tutorial to the most
+recent IMP release, and other branches to the IMP nightly build). To add
+explicit links to IMP objects or to sections in the IMP manual, use
+the `@ref` notation as described in the
+[doxygen manual](http://www.doxygen.nl/manual/markdown.html#md_header_id).
+
+To format the text, run `../support/tutorial_tools/doxygen/make-docs.py` (it
+requires network access and that you have `doxygen` installed) then open
+`html/index.html` in a web browser.
+
+The formatted tutorial text for the `master` branch will also be deployed
+automatically to `https://integrativemodeling.org/tutorials/<name>` on each
+push to GitHub. (`<name>` is the name of the tutorial GitHub repository,
+with any `imp_` prefix or `_tutorial` suffix removed). Non-`master` branches
+of the tutorial will be found under a subdirectory named for the branch, e.g.
+`https://integrativemodeling.org/tutorials/<name>/develop/`.
