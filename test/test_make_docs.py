@@ -57,7 +57,7 @@ def make_file(subdir, fname, contents):
     with open(os.path.join(subdir, fname), 'w') as fh:
         fh.write(contents)
 
-def make_test_docs(tmpdir):
+def _make_docs(tmpdir):
     docdir = os.path.join(tmpdir, 'doc')
     support = os.path.join(tmpdir, 'support')
     os.mkdir(docdir)
@@ -71,7 +71,7 @@ class Tests(unittest.TestCase):
         """Test simple complete run of make-docs.py"""
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
         with temporary_directory(TOPDIR) as tmpdir:
-            docdir = make_test_docs(tmpdir)
+            docdir = _make_docs(tmpdir)
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs], cwd=docdir)
             # Check for generated outputs
@@ -84,7 +84,7 @@ class Tests(unittest.TestCase):
         """Test make-docs.py with manually-specified branch"""
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
         with temporary_directory(TOPDIR) as tmpdir:
-            docdir = make_test_docs(tmpdir)
+            docdir = _make_docs(tmpdir)
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs, '--branch', 'testbranch'],
                                       cwd=docdir)
