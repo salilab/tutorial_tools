@@ -18,6 +18,15 @@ tutorial, with contents similar to:
 
     title: My tutorial
 
+Choose a suitable license for the tutorial and put it in a file `LICENSE`.
+We recommend the
+[CC BY-SA license](https://creativecommons.org/licenses/by-sa/4.0/). One way
+to do this is to simply copy
+[this LICENSE file](https://github.com/salilab/imp_coding_tutorial/blob/master/LICENSE).
+
+Make a simple `README.md` file. Generally a brief description of the tutorial
+and a link to the website (see below) is sufficient content.
+
 ## Branches
 
   - The `master` branch of your tutorial should work with both the latest stable
