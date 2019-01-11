@@ -59,6 +59,10 @@ div#main-nav {
     margin-bottom: 40px;
 }
 
+#main-nav ul {
+    padding-left: 0;
+}
+
 .sm-dox {
     background-image: none;
 }
