@@ -38,8 +38,10 @@ and a link to the website (see below) is sufficient content.
 ## Testing
 
 Make a `support/test` directory and put one or more Python test scripts
-there. These should run the tutorial scripts (perhaps with a `--test` flag
-to run faster) and check that everything worked correctly. Each file should
+there. These should run the tutorial scripts and check that everything
+worked correctly. Note that there is a 20 minute time limit for tests, so
+you may need to run shorter simulations (perhaps with a `--test` flag).
+Each file should
 be executable (with a `#!/usr/bin/env python`) first line), and use the
 Python `unittest` module.
 
