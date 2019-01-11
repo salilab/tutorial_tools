@@ -29,6 +29,7 @@ def make_file(subdir, fname, contents):
 
 os.mkdir('html')
 make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
+make_file('html', 'menudata.js', 'foo')
 """
 
 @contextlib.contextmanager

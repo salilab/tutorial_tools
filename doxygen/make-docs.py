@@ -176,6 +176,18 @@ def patch_html(filename, repo, source, branch):
         raise ValueError("Failed to patch %s to add GitHub-edit link"
                          % filename)
 
+def fix_menu_links(imp_version):
+    # The generated html/menudata.js contains links to the IMP nightly build.
+    # Patch this if necessary to make the links go to the stable release
+    # instead.
+    if imp_version == 'nightly':
+        return
+    fname = 'html/menudata.js'
+    with open(fname, 'r') as fh:
+        contents = fh.read()
+    with open(fname, 'w') as fh:
+        fh.write(contents.replace('nightly', imp_version))
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Build tutorial docs")
     parser.add_argument("--branch",
@@ -195,6 +207,7 @@ def main():
     make_doxyfile(tags)
     run_doxygen()
     add_github_edit_links(branch)
+    fix_menu_links(imp_version)
 
 if __name__ == '__main__':
     main()
