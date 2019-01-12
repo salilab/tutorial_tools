@@ -17,6 +17,16 @@ Make a `metadata.yaml` file in the `support` directory to describe the
 tutorial, with contents similar to:
 
     title: My tutorial
+    description: >
+        Longer description of the tutorial, which
+        can span multiple lines.
+    show_in_index: false
+
+This metadata is used on the
+[IMP tutorial index](https://integrativemodeling.org/tutorials/) (`title`
+provides a short name for the tutorial, and `description` gives a longer
+text. `show_in_index: false` prevents the tutorial from showing up in the
+index. Remove this line once the tutorial is ready for public consumption.)
 
 Choose a suitable license for the tutorial and put it in a file `LICENSE`.
 We recommend the
