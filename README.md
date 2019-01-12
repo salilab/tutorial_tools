@@ -73,6 +73,12 @@ recent IMP release, and other branches to the IMP nightly build). To add
 explicit links to IMP objects or to sections in the IMP manual, use
 the `@ref` notation as described in the
 [doxygen manual](http://www.doxygen.nl/manual/markdown.html#md_header_id).
+(To prevent a word from being automatically linked, prefix it with the
+% character. This is often used for "IMP" which otherwise is linked to
+the documentation for the IMP (kernel) namespace.)
+
+To include images in the tutorial, put them in an `images` subdirectory and use
+the [\image command](http://www.doxygen.nl/manual/commands.html#cmdimage).
 
 To put example code (e.g. C++, Python, or shell) directly in the text, use the
 [\code and \endcode commands](http://www.doxygen.nl/manual/commands.html#cmdcode).
