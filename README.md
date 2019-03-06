@@ -52,7 +52,7 @@ there. These should run the tutorial scripts and check that everything
 worked correctly. Note that there is a 20 minute time limit for tests, so
 you may need to run shorter simulations (perhaps with a `--test` flag).
 Each file should
-be executable (with a `#!/usr/bin/env python`) first line), and use the
+be executable (with a `#!/usr/bin/env python` first line), and use the
 Python `unittest` module.
 
 Then copy a [Travis](https://travis-ci.org/) configuration file to the
