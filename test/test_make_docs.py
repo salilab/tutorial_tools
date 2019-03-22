@@ -40,6 +40,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == '-s':
 else:
     os.mkdir('html')
     make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
+    make_file('html', 'pages.html', 'foo')
     make_file('html', 'menudata.js', 'foo')
 """
 
@@ -67,6 +68,7 @@ def _make_docs(tmpdir):
     support = os.path.join(tmpdir, 'support')
     os.mkdir(docdir)
     make_file(docdir, "mainpage.md", "Intro {#mainpage}\n=====\n\n")
+    make_file(docdir, "other.md", "Other {#other}\n=====\n\n")
     os.mkdir(support)
     make_file(support, "metadata.yaml", "title: Intro\n")
     return docdir
@@ -91,7 +93,7 @@ class Tests(unittest.TestCase):
         with utils.temporary_directory(TOPDIR) as tmpdir:
             docdir = _make_docs(tmpdir)
             with mock_doxygen(tmpdir):
-                subprocess.check_call([make_docs, '--branch', 'testbranch'],
+                subprocess.check_call([make_docs, '--branch', 'master'],
                                       cwd=docdir)
             # Check for generated outputs
             os.unlink(os.path.join(docdir, 'manual-tags.xml'))
