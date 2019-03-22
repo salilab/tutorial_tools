@@ -114,7 +114,8 @@ class Tests(unittest.TestCase):
                                      stderr=subprocess.PIPE)
                 stdout, stderr = p.communicate()
                 self.assertEqual(p.returncode, 1)
-                self.assertTrue('IOError: doxygen failed' in stderr)
+                self.assertTrue('IOError: doxygen failed' in stderr,
+                                msg="bad stderr %s" % stderr)
 
     def test_read_yaml_file(self):
         """Test read_yaml_file"""
