@@ -9,6 +9,17 @@ import shutil
 
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
+def import_make_docs():
+    make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
+    name = os.path.splitext(make_docs)[0]
+    try:
+        import importlib.machinery
+        return importlib.machinery.SourceFileLoader(name,
+                                                    make_docs).load_module()
+    except ImportError:
+        import imp
+        return imp.load_source(name, make_docs)
+
 # Python script to simulate running doxygen
 DOXYGEN = """
 from __future__ import print_function
@@ -84,6 +95,10 @@ class Tests(unittest.TestCase):
                                       cwd=docdir)
             # Check for generated outputs
             os.unlink(os.path.join(docdir, 'manual-tags.xml'))
+
+    def test_import(self):
+        """Test import of script as a Python module"""
+        make_docs = import_make_docs()
 
 if __name__ == '__main__':
     unittest.main()
