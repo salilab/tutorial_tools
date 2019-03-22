@@ -121,7 +121,7 @@ class Tests(unittest.TestCase):
         """Test read_yaml_file"""
         make_docs = import_make_docs()
         with utils.temporary_directory(TOPDIR) as tmpdir:
-            make_file(tmpdir, "m.yaml", "title: Intro\nfoo: bar\n")
+            make_file(tmpdir, "m.yaml", "bar: baz\ntitle: Intro\nfoo: bar\n")
             t = make_docs.read_yaml_file(os.path.join(tmpdir, 'm.yaml'))
             self.assertEqual(t, "Intro")
 
