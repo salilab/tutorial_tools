@@ -113,5 +113,13 @@ class Tests(unittest.TestCase):
                 self.assertEqual(p.returncode, 1)
                 self.assertTrue('IOError: doxygen failed' in stderr)
 
+    def test_read_yaml_file(self):
+        """Test read_yaml_file"""
+        make_docs = import_make_docs()
+        with utils.temporary_directory(TOPDIR) as tmpdir:
+            make_file(tmpdir, "m.yaml", "title: Intro\nfoo: bar\n")
+            t = make_docs.read_yaml_file(os.path.join(tmpdir, 'm.yaml'))
+            self.assertEqual(t, "Intro")
+
 if __name__ == '__main__':
     unittest.main()

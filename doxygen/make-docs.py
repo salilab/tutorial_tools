@@ -49,9 +49,10 @@ def get_title():
 
 def read_yaml_file(fname):
     # Avoid 'import yaml' since it isn't in the standard library
-    for line in open(fname):
-        if line.startswith('title:'):
-            return line.split(':', 1)[1].strip()
+    with open(fname) as fh:
+        for line in fh:
+            if line.startswith('title:'):
+                return line.split(':', 1)[1].strip()
 
 def make_doxyfile(tags):
     tagfiles = " ".join(("%s=%s" % (t.xml_filename, t.doctop)) for t in tags)
