@@ -146,7 +146,7 @@ def get_pagename(filename, regex):
 
 def get_page_map():
     m = {}
-    page_name_md_re = re.compile('{#(\S+)}')
+    page_name_md_re = re.compile(r'{#(\S+)}')
     for md in glob.glob("*.md"):
         pagename = get_pagename(md, page_name_md_re)
         if pagename == 'mainpage':
