@@ -1,5 +1,6 @@
 import unittest
 import subprocess
+import re
 import os
 import sys
 import utils
@@ -120,6 +121,18 @@ class Tests(unittest.TestCase):
             make_file(tmpdir, "m.yaml", "title: Intro\nfoo: bar\n")
             t = make_docs.read_yaml_file(os.path.join(tmpdir, 'm.yaml'))
             self.assertEqual(t, "Intro")
+
+    def test_get_pagename(self):
+        """Test get_pagename"""
+        r = re.compile(r'{#(\S+)}')
+        make_docs = import_make_docs()
+        with utils.temporary_directory(TOPDIR) as tmpdir:
+            make_file(tmpdir, "good.md", "# title {#anchor}\nfoo\nbar")
+            make_file(tmpdir, "bad.md", "# title\nfoo\nbar")
+            n = make_docs.get_pagename(os.path.join(tmpdir, "good.md"), r)
+            self.assertEqual(n, "anchor")
+            self.assertRaises(ValueError, make_docs.get_pagename,
+                              os.path.join(tmpdir, "bad.md"), r)
 
 if __name__ == '__main__':
     unittest.main()
