@@ -88,7 +88,7 @@ def make_doxyfile(tags):
             fh.write(line)
     ret = p.wait()
     if ret != 0:
-        raise IOError("doxygen failed")
+        raise OSError("doxygen failed")
 
 class TagFile(object):
     """Represent a doxygen XML tag file"""
