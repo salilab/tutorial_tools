@@ -26,31 +26,30 @@ from __future__ import print_function
 import os
 import sys
 
+def make_file(subdir, fname, contents):
+    with open(os.path.join(subdir, fname), 'w') as fh:
+        fh.write(contents)
+
 if len(sys.argv) >= 2 and sys.argv[1] == '-s':
     for name in ('FILE_VERSION_FILTER', 'LAYOUT_FILE', 'PROJECT_NAME',
                  'INPUT', 'SEARCHENGINE', 'TOC_INCLUDE_HEADINGS',
                  'IMAGE_PATH', 'HTML_HEADER', 'HTML_FOOTER', 'GENERATE_LATEX',
                  'TAGFILES', 'EXAMPLE_PATH'):
         print("%-23s=" % name)
-    sys.exit(0)
-
-def make_file(subdir, fname, contents):
-    with open(os.path.join(subdir, fname), 'w') as fh:
-        fh.write(contents)
-
-os.mkdir('html')
-make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
-make_file('html', 'menudata.js', 'foo')
+else:
+    os.mkdir('html')
+    make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
+    make_file('html', 'menudata.js', 'foo')
 """
 
 @contextlib.contextmanager
-def mock_doxygen(topdir):
+def mock_doxygen(topdir, retval=0):
     """Make a mock 'doxygen' binary and add it to the PATH"""
     bindir = os.path.join(topdir, 'bin')
     os.mkdir(bindir)
     dox = os.path.join(bindir, 'doxygen')
     with open(dox, 'w') as fh:
-        fh.write("#!%s\n%s" % (sys.executable, DOXYGEN))
+        fh.write("#!%s\n%ssys.exit(%d)" % (sys.executable, DOXYGEN, retval))
     os.chmod(dox, 493) # 493 = octal 0755, i.e. executable
     oldpath = os.environ['PATH']
     os.environ['PATH'] = bindir + ':' + oldpath
@@ -99,6 +98,20 @@ class Tests(unittest.TestCase):
     def test_import(self):
         """Test import of script as a Python module"""
         make_docs = import_make_docs()
+
+    def test_doxygen_failure(self):
+        """Test handling of doxygen failure"""
+        make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
+        with utils.temporary_directory(TOPDIR) as tmpdir:
+            docdir = _make_docs(tmpdir)
+            with mock_doxygen(tmpdir, retval=1):
+                p = subprocess.Popen([make_docs], cwd=docdir,
+                                     universal_newlines=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
+                stdout, stderr = p.communicate()
+                self.assertEqual(p.returncode, 1)
+                self.assertTrue('IOError: doxygen failed' in stderr)
 
 if __name__ == '__main__':
     unittest.main()
