@@ -154,14 +154,35 @@ def get_page_map():
         m['html/%s.html' % pagename] = md
     return m
 
-def add_github_edit_links(branch):
+def get_license():
+    fname = '../LICENSE'
+    if not os.path.exists(fname):
+        return ''
+    with open(fname) as fh:
+        return fh.read()
+
+def get_license_link():
+    license = get_license()
+    if 'Attribution-ShareAlike 4.0 International' in license:
+        return """
+<div class="doxlicense">
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/"
+     title="This work is available under the terms of the Creative Commons Attribution-ShareAlike 4.0 International license">
+    <img src="https://integrativemodeling.org/tutorials/by-sa.svg" alt="CC BY-SA logo">
+  </a>
+</div>"""
+    else:
+        return ''
+
+def add_html_links(branch):
+    license_link = get_license_link()
     repo = get_git_repo()
     pagemap = get_page_map()
     for html in glob.glob("html/*.html"):
         if html != 'html/pages.html':
-            patch_html(html, repo, pagemap[html], branch)
+            patch_html(html, repo, pagemap[html], branch, license_link)
 
-def patch_html(filename, repo, source, branch):
+def patch_html(filename, repo, source, branch, license_link):
     edit_link = '  $(\'#main-menu\').append(\'<li style="float:right"><div id="github_edit"><a href="https://github.com/salilab/%s/blob/%s/doc/%s"><i class="fab fa-github"></i> Edit on GitHub</a></div></li>\');\n' % (repo, branch, source)
 
     with open(filename) as fh:
@@ -173,6 +194,8 @@ def patch_html(filename, repo, source, branch):
             if line.startswith("  initMenu('',false,false"):
                 patched = True
                 fh.write(edit_link)
+            if line.startswith('<hr class="footer"'):
+                fh.write(license_link)
     if not patched:
         raise ValueError("Failed to patch %s to add GitHub-edit link"
                          % filename)
@@ -207,7 +230,7 @@ def main():
     tags = get_tag_files(imp_version)
     make_doxyfile(tags)
     run_doxygen()
-    add_github_edit_links(branch)
+    add_html_links(branch)
     fix_menu_links(imp_version)
 
 if __name__ == '__main__':

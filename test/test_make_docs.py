@@ -79,6 +79,7 @@ class Tests(unittest.TestCase):
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
         with utils.temporary_directory(TOPDIR) as tmpdir:
             docdir = _make_docs(tmpdir)
+            make_file(tmpdir, "LICENSE", "Some random license")
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs], cwd=docdir)
             # Check for generated outputs
@@ -92,6 +93,8 @@ class Tests(unittest.TestCase):
         make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
         with utils.temporary_directory(TOPDIR) as tmpdir:
             docdir = _make_docs(tmpdir)
+            make_file(tmpdir, "LICENSE",
+                      "Attribution-ShareAlike 4.0 International")
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs, '--branch', 'master'],
                                       cwd=docdir)
