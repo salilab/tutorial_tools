@@ -39,7 +39,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == '-s':
         print("%-23s=" % name)
 else:
     os.mkdir('html')
-    make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n")
+    make_file('html', 'index.html', "$(function() {\\n  initMenu('',false,false,'search.php','Search');\\n});\\n<hr class=\\"footer\\"/>\\n")
     make_file('html', 'pages.html', 'foo')
     make_file('html', 'menudata.js', 'foo')
 """
@@ -82,6 +82,9 @@ class Tests(unittest.TestCase):
             make_file(tmpdir, "LICENSE", "Some random license")
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs], cwd=docdir)
+            with open(os.path.join(docdir, 'html', 'index.html')) as fh:
+                contents = fh.read()
+            self.assertFalse("creativecommons.org" in contents)
             # Check for generated outputs
             os.unlink(os.path.join(docdir, 'manual-tags.xml'))
             os.unlink(os.path.join(docdir, 'ref-tags.xml'))
@@ -98,6 +101,9 @@ class Tests(unittest.TestCase):
             with mock_doxygen(tmpdir):
                 subprocess.check_call([make_docs, '--branch', 'master'],
                                       cwd=docdir)
+            with open(os.path.join(docdir, 'html', 'index.html')) as fh:
+                contents = fh.read()
+            self.assertTrue("creativecommons.org" in contents)
             # Check for generated outputs
             os.unlink(os.path.join(docdir, 'manual-tags.xml'))
 
