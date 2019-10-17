@@ -110,3 +110,35 @@ push to GitHub. (`<name>` is the name of the tutorial GitHub repository,
 with any `imp_` prefix or `_tutorial` suffix removed). Non-`master` branches
 of the tutorial will be found under a subdirectory named for the branch, e.g.
 `https://integrativemodeling.org/tutorials/<name>/develop/`.
+
+## Generation from Jupyter Notebook templates (experimental)
+
+Tutorials can also be generated using a slightly-modified Jupyter Notebook
+as the input. (This is still in development.)
+
+Given a template notebook, `.template/foo.ipynb`, running the script
+`notebook/process_notebook.py foo` will generate:
+ - `foo.ipynb`, a standard Jupyter notebook, suitable for general use
+ - `foo.py`, a simple Python script that can be run in a regular Python session
+ - `foo.md`, markdown suitable for further processing with doxygen (above)
+
+The template notebook allows for additional functionality not present in
+regular Jupyter notebooks:
+ - doxygen-style links of the form `[foo](@ref bar)` can be used. `@ref bar`
+   will be replaced with the full URL for the identifier `bar`. `bar` can
+   be any IMP class or module name (e.g. IMP.atom.Selection, IMP::pmi)
+   or any identifier read with `%intersphinx` (see below).
+ - The `` ``foo`` `` syntax is shorthand for `[foo](@ref foo)`.
+ - The `` ``~x.y.z.foo`` `` syntax is shorthand for `[foo](@ref x.y.z.foo)`. 
+ - A line of the form `%intersphinx url` acts like the Sphinx intersphinx
+   extension. It fetches a Python inventory file from `url` so that `@ref`
+   can also be used to refer to Python objects from that URL. For example,
+   after using `%intersphinx https://docs.python.org/3` links can be made
+   to Python standard library objects, e.g. `@ref itertools`.
+
+Todo:
+%%nbonly
+show this cell only in the notebook output
+
+%%nbexclude
+show this cell only in not-notebook output
