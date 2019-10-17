@@ -1,13 +1,44 @@
 import json
+import os
 import re
+import time
 import argparse
 import posixpath
+import subprocess
 import xml.etree.ElementTree as ET
 from inventory import InventoryFile
+from urllib.request import urlopen
 
 
 # Latest IMP stable release
 IMP_STABLE_RELEASE = '2.11.1'
+
+# Absolute path to the top of the repository
+TOPDIR = os.path.abspath('..')
+
+# Path to this directory (containing doxygen inputs)
+DOXDIR = os.path.abspath(os.path.dirname(__file__))
+
+# Path to templates
+TEMPLATE = ".template"
+
+
+def file_age(fname):
+    """Return time in seconds since `fname` was last changed"""
+    return time.time() - os.stat(fname).st_mtime
+
+
+def get_cached_url(url, local):
+    cache = os.path.join(TEMPLATE, '.cache')
+    if not os.path.exists(cache):
+        os.mkdir(cache)
+    fname = os.path.join(cache, local)
+    # Use file if it already exists and is less than a day old
+    if not os.path.exists(fname) or file_age(fname) > 86400:
+        response = urlopen(url)
+        with open(fname, 'wb') as fh:
+            fh.write(response.read())
+    return fname
 
 
 class RefLinks(object):
@@ -64,8 +95,10 @@ def patch_source(source, rl):
     for c in source:
         if c.startswith('%intersphinx'):
             url = c.split()[1]
-            # get objects from url/objects.inv
-            rl.parse_python_inventory_file('objects.inv', url)
+            objfile_url = posixpath.join(url, 'objects.inv')
+            objfile = get_cached_url(url=objfile_url,
+                local=objfile_url.replace(':', '').replace('/', ''))
+            rl.parse_python_inventory_file(objfile, url)
         else:
             yield rl.fix_links(c)
 
@@ -76,14 +109,10 @@ def write_cell(cell, fh):
     fh.write('\n')
 
 
-def generate_files(root):
+def generate_files(root, tags):
     rl = RefLinks()
-    rl.parse_doxygen_tag_file(
-        '.template/ref-tags.xml',
-        'https://integrativemodeling.org/%s/doc/ref/' % IMP_STABLE_RELEASE)
-    rl.parse_doxygen_tag_file(
-        '.template/manual-tags.xml',
-        'https://integrativemodeling.org/%s/doc/manual/' % IMP_STABLE_RELEASE)
+    for t in tags:
+        rl.parse_doxygen_tag_file(t.xml_filename, t.doctop)
 
     # Read in the template
     with open('.template/%s.ipynb' % root) as fh:
@@ -114,6 +143,39 @@ def generate_files(root):
                 write_cell(cell, fh)
                 fh.write('\\endcode\n')
 
+def get_git_branch():
+    return subprocess.check_output(['git', 'rev-parse', '--abbrev-ref',
+                                    'HEAD'],
+                                   universal_newlines=True).rstrip('\r\n')
+
+
+class TagFile(object):
+    """Represent a doxygen XML tag file"""
+
+    def __init__(self, doctype, imp_version):
+        # Path to top of IMP documentation
+        self._urltop = 'https://integrativemodeling.org/%s/doc' % imp_version
+        self.imp_version = imp_version
+
+        # doctype should be 'manual' or 'ref'
+        self.doctype = doctype
+
+        # URL for the documentation
+        self.doctop = '%s/%s/' % (self._urltop, doctype)
+
+    def download(self):
+        """Get the tag file from the web site and put it on the local disk"""
+        local = "%s-%s-tags.xml" % (self.doctype, self.imp_version)
+        remote = "%s/%s-tags.xml" % (self._urltop, self.doctype)
+        self.xml_filename = get_cached_url(local=local, url=remote)
+
+
+def get_tag_files(imp_version):
+    tags = [TagFile(doctype, imp_version) for doctype in ('manual', 'ref')]
+    for t in tags:
+        t.download()
+    return tags
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -129,7 +191,15 @@ def parse_args():
 
 def main():
     args = parse_args()
+    branch = args.branch if args.branch else get_git_branch()
 
+    # master branch of tutorials should work with IMP stable release
+    # (and so should link to stable docs); other branches use nightly
+    imp_version = IMP_STABLE_RELEASE if branch == 'master' else 'nightly'
+
+    tags = get_tag_files(imp_version)
+
+    generate_files(args.filename, tags)
 
 
 if __name__ == '__main__':
