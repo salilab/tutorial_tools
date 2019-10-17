@@ -128,8 +128,8 @@ regular Jupyter notebooks:
    will be replaced with the full URL for the identifier `bar`. `bar` can
    be any IMP class or module name (e.g. IMP.atom.Selection, IMP::pmi)
    or any identifier read with `%intersphinx` (see below).
- - The `` ``foo`` `` syntax is shorthand for `[foo](@ref foo)`.
- - The `` ``~x.y.z.foo`` `` syntax is shorthand for `[foo](@ref x.y.z.foo)`. 
+ - The \`\`foo\`\` syntax is shorthand for `[foo](@ref foo)`.
+ - The \`\`~x.y.z.foo\`\` syntax is shorthand for `[foo](@ref x.y.z.foo)`. 
  - A line of the form `%intersphinx url` acts like the Sphinx intersphinx
    extension. It fetches a Python inventory file from `url` so that `@ref`
    can also be used to refer to Python objects from that URL. For example,
