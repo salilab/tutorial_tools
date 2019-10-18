@@ -139,10 +139,5 @@ regular Jupyter notebooks:
    HTML output.
  - Custom anchors can be added to headings, of the form
    `# Heading {#anchor}`.
-
-Todo:
-%%nbonly
-show this cell only in the notebook output
-
-%%nbexclude
-show this cell only in not-notebook output
+ - A cell starting with `%%nbexclude` will be excluded from the notebook output.
+ - A cell starting with `%%htmlexclude` will be excluded from the HTML output.

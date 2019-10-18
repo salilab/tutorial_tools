@@ -101,7 +101,7 @@ def patch_source(source, rl):
         else:
             yield rl.fix_links(c)
 
-non_jupyter_constructs = re.compile('\[TOC\]|\{#[^\s}]+\}')
+non_jupyter_constructs = re.compile('\[TOC\]|\{#[^\s}]+\}|%%(html|nb)exclude')
 def remove_non_jupyter(source, rl):
     for c in source:
         yield re.sub(non_jupyter_constructs, '', c)
@@ -109,8 +109,24 @@ def remove_non_jupyter(source, rl):
 
 def write_cell(cell, fh):
     for s in cell['source']:
-        fh.write(s)
+        if (not s.startswith('%%htmlexclude')
+            and not s.startswith('%%nbexclude')):
+            fh.write(s)
     fh.write('\n')
+
+
+def get_cell_subset(cells, excludestr):
+    for cell in cells:
+        if not cell['source'] or excludestr not in cell['source'][0]:
+            yield cell
+
+
+def get_only_html_cells(cells):
+    return get_cell_subset(cells, excludestr='%%htmlexclude')
+
+
+def get_only_notebook_cells(cells):
+    return get_cell_subset(cells, excludestr='%%nbexclude')
 
 
 def generate_files(root, tags):
@@ -135,7 +151,7 @@ def generate_files(root, tags):
 
     # Write markdown suitable for processing with doxygen
     with open('%s.md' % root, 'w') as fh:
-        for cell in j['cells']:
+        for cell in get_only_html_cells(j['cells']):
             if cell['cell_type'] == 'markdown':
                 write_cell(cell, fh)
             elif cell['cell_type'] == 'code':
@@ -144,6 +160,7 @@ def generate_files(root, tags):
                 fh.write('\\endcode\n')
 
     # Remove constructs that Jupyter doesn't understand from the JSON
+    j['cells'] = list(get_only_notebook_cells(j['cells']))
     for cell in j['cells']:
         if cell['cell_type'] == 'markdown':
             cell['source'] = list(remove_non_jupyter(cell['source'], rl))
