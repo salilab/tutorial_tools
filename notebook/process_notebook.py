@@ -1,4 +1,5 @@
 import json
+import glob
 import os
 import re
 import time
@@ -13,11 +14,9 @@ from urllib.request import urlopen
 # Latest IMP stable release
 IMP_STABLE_RELEASE = '2.11.1'
 
-# Absolute path to the top of the repository
-TOPDIR = os.path.abspath('..')
-
-# Path to this directory (containing doxygen inputs)
-DOXDIR = os.path.abspath(os.path.dirname(__file__))
+# Path to doxygen directory (containing doxygen inputs)
+DOXDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      '..', 'doxygen'))
 
 # Path to templates
 TEMPLATE = ".template"
@@ -189,6 +188,150 @@ def parse_args():
     return parser.parse_args()
 
 
+def make_doxyfile(root, tags):
+    tagfiles = " ".join(("%s=%s" % (t.xml_filename, t.doctop)) for t in tags)
+    title = "IMP Tutorial"
+    # Generate doxygen template
+    p = subprocess.Popen(['doxygen', '-s', '-g', '-'], stdout=subprocess.PIPE,
+                         universal_newlines=True)
+    # Substitute in our custom config
+    with open('Doxyfile', 'w') as fh:
+        for line in p.stdout:
+            if line.startswith('LAYOUT_FILE '):
+                line = 'LAYOUT_FILE = "%s/layout.xml"\n' % DOXDIR
+            elif line.startswith('PROJECT_NAME '):
+                line = 'PROJECT_NAME = "%s"\n' % title
+            elif line.startswith('INPUT '):
+                line = 'INPUT = %s.md\n' % root
+            elif line.startswith('SEARCHENGINE '):
+                line = 'SEARCHENGINE = NO\n'
+            elif line.startswith('TOC_INCLUDE_HEADINGS '):
+                line = 'TOC_INCLUDE_HEADINGS = 2\n'
+            elif line.startswith('IMAGE_PATH '):
+                line = 'IMAGE_PATH = .\n'
+            elif line.startswith('EXAMPLE_PATH '):
+                line = 'EXAMPLE_PATH = ..\n'
+            elif line.startswith('HTML_HEADER '):
+                line = 'HTML_HEADER = "%s/header.html"\n' % DOXDIR
+            elif line.startswith('HTML_FOOTER '):
+                line = 'HTML_FOOTER = "%s/footer.html"\n' % DOXDIR
+            elif line.startswith('GENERATE_LATEX '):
+                line = 'GENERATE_LATEX = NO\n'
+            elif line.startswith('AUTOLINK_SUPPORT '):
+                # Don't make links from the text (only from code samples)
+                line = 'AUTOLINK_SUPPORT = NO\n'
+            elif line.startswith('TAGFILES '):
+                line = 'TAGFILES = %s\n' % tagfiles
+            fh.write(line)
+    ret = p.wait()
+    if ret != 0:
+        raise OSError("doxygen failed")
+
+
+def run_doxygen():
+    subprocess.check_call(['doxygen', 'Doxyfile'])
+
+
+def get_git_branch():
+    return subprocess.check_output(['git', 'rev-parse', '--abbrev-ref',
+                                    'HEAD'],
+                                   universal_newlines=True).rstrip('\r\n')
+
+
+def get_git_repo():
+    url = subprocess.check_output(['git', 'config', '--get',
+                                   'remote.origin.url'],
+                                   universal_newlines=True).rstrip('\r\n')
+    pth, repo = os.path.split(url)
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+    return repo
+
+
+def get_pagename(filename, regex):
+    with open(filename) as fh:
+        for line in fh:
+            m = regex.search(line)
+            if m:
+                return m.group(1)
+    raise ValueError("Could not determine page name for file %s" % filename)
+
+
+def get_page_map():
+    m = {}
+    page_name_md_re = re.compile(r'{#(\S+)}')
+    for md in glob.glob("*.md"):
+        pagename = get_pagename(md, page_name_md_re)
+        if pagename == 'mainpage':
+            pagename = 'index'
+        m['html/%s.html' % pagename] = md
+    return m
+
+
+def get_license():
+    fname = '../LICENSE'
+    if not os.path.exists(fname):
+        return ''
+    with open(fname) as fh:
+        return fh.read()
+
+
+def get_license_link():
+    license = get_license()
+    if 'Attribution-ShareAlike 4.0 International' in license:
+        return """
+<div class="doxlicense">
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/"
+     title="This work is available under the terms of the Creative Commons Attribution-ShareAlike 4.0 International license">
+    <img src="https://integrativemodeling.org/tutorials/by-sa.svg" alt="CC BY-SA logo">
+  </a>
+</div>"""
+    else:
+        return ''
+
+
+def patch_html(filename, repo, source, branch, license_link):
+    edit_link = '  $(\'#main-menu\').append(\'<li style="float:right"><div id="github_edit"><a href="https://github.com/salilab/%s/blob/%s/doc/%s"><i class="fab fa-github"></i> Edit on GitHub</a></div></li>\');\n' % (repo, branch, source)
+
+    with open(filename) as fh:
+        contents = fh.readlines()
+    patched = False
+    with open(filename, 'w') as fh:
+        for line in contents:
+            fh.write(line)
+            if line.startswith("  initMenu('',false,false"):
+                patched = True
+                fh.write(edit_link)
+            if line.startswith('<hr class="footer"'):
+                fh.write(license_link)
+    if not patched:
+        raise ValueError("Failed to patch %s to add GitHub-edit link"
+                         % filename)
+
+
+def fix_menu_links(imp_version):
+    # The generated html/menudata.js contains links to the IMP nightly build.
+    # Patch this if necessary to make the links go to the stable release
+    # instead.
+    if imp_version == 'nightly':
+        return
+    fname = 'html/menudata.js'
+    with open(fname, 'r') as fh:
+        contents = fh.read()
+    with open(fname, 'w') as fh:
+        fh.write(contents.replace('nightly', imp_version))
+
+
+def add_html_links(branch):
+    license_link = get_license_link()
+    repo = get_git_repo()
+    pagemap = get_page_map()
+    for html in glob.glob("html/*.html"):
+        if html != 'html/pages.html':
+            patch_html(html, repo, pagemap[html], branch, license_link)
+
+
+
 def main():
     args = parse_args()
     branch = args.branch if args.branch else get_git_branch()
@@ -200,6 +343,10 @@ def main():
     tags = get_tag_files(imp_version)
 
     generate_files(args.filename, tags)
+    make_doxyfile(args.filename, tags)
+    run_doxygen()
+    add_html_links(branch)
+    fix_menu_links(imp_version)
 
 
 if __name__ == '__main__':
