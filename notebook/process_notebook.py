@@ -241,6 +241,8 @@ def make_doxyfile(root, tags):
 
 def run_doxygen():
     subprocess.check_call(['doxygen', 'Doxyfile'])
+    if not os.path.exists('html/images'):
+        os.symlink('../.template/images', 'html/images')
 
 
 def get_git_branch():
