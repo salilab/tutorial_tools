@@ -101,6 +101,11 @@ def patch_source(source, rl):
         else:
             yield rl.fix_links(c)
 
+non_jupyter_constructs = re.compile('\[TOC\]|\{#[^\s}]+\}')
+def remove_non_jupyter(source, rl):
+    for c in source:
+        yield re.sub(non_jupyter_constructs, '', c)
+
 
 def write_cell(cell, fh):
     for s in cell['source']:
@@ -122,10 +127,6 @@ def generate_files(root, tags):
         if cell['cell_type'] == 'markdown':
             cell['source'] = list(patch_source(cell['source'], rl))
 
-    # Write Jupyter notebook with full links and our custom magics removed
-    with open('%s.ipynb' % root, 'w') as fh:
-        json.dump(j, fh, indent=2)
-
     # Write plain Python script
     with open('%s.py' % root, 'w') as fh:
         for cell in j['cells']:
@@ -141,6 +142,16 @@ def generate_files(root, tags):
                 fh.write('\\code{.py}\n')
                 write_cell(cell, fh)
                 fh.write('\\endcode\n')
+
+    # Remove constructs that Jupyter doesn't understand from the JSON
+    for cell in j['cells']:
+        if cell['cell_type'] == 'markdown':
+            cell['source'] = list(remove_non_jupyter(cell['source'], rl))
+
+    # Write Jupyter notebook
+    with open('%s.ipynb' % root, 'w') as fh:
+        json.dump(j, fh, indent=2)
+
 
 def get_git_branch():
     return subprocess.check_output(['git', 'rev-parse', '--abbrev-ref',
