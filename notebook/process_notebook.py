@@ -68,6 +68,17 @@ class RefLinks(object):
                 name = c.find('name').text
                 url = urltop + c.find('filename').text
                 self.refs[name] = url
+                if c.attrib['kind'] == 'class':
+                    self._add_member_tags(c, name, urltop)
+
+    def _add_member_tags(self, cls, clsname, urltop):
+        """Add doxygen tags for class members"""
+        for meth in cls:
+            if (meth.tag == 'member' and meth.attrib.get('kind') == 'function'):
+                methname = meth.find('name').text
+                url = (urltop + meth.find('anchorfile').text
+                       + '#' + meth.find('anchor').text)
+                self.refs[clsname + '::' + methname] = url
 
     def _replace_backtick_link(self, m):
         txt = m.group(1)
