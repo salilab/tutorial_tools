@@ -18,8 +18,11 @@ IMP_STABLE_RELEASE = '2.11.1'
 DOXDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       '..', 'doxygen'))
 
-# Path to templates
-TEMPLATE = ".template"
+# Template prefix
+TEMPLATE = ".template."
+
+# Cache directory
+CACHE = ".cache"
 
 
 def file_age(fname):
@@ -28,10 +31,9 @@ def file_age(fname):
 
 
 def get_cached_url(url, local):
-    cache = os.path.join(TEMPLATE, '.cache')
-    if not os.path.exists(cache):
-        os.mkdir(cache)
-    fname = os.path.join(cache, local)
+    if not os.path.exists(CACHE):
+        os.mkdir(CACHE)
+    fname = os.path.join(CACHE, local)
     # Use file if it already exists and is less than a day old
     if not os.path.exists(fname) or file_age(fname) > 86400:
         response = urlopen(url)
@@ -146,7 +148,7 @@ def generate_files(root, tags):
         rl.parse_doxygen_tag_file(t.xml_filename, t.doctop)
 
     # Read in the template
-    with open('.template/%s.ipynb' % root) as fh:
+    with open('%s%s.ipynb' % (TEMPLATE, root)) as fh:
         j = json.load(fh)
 
     # Handle our custom magics and @ref links
@@ -156,9 +158,13 @@ def generate_files(root, tags):
 
     # Write plain Python script
     with open('%s.py' % root, 'w') as fh:
+        first = True
         for cell in j['cells']:
             if cell['cell_type'] == 'code':
+                if not first:
+                    fh.write('\n')
                 write_cell(cell, fh)
+                first = False
 
     # Write markdown suitable for processing with doxygen
     with open('%s.md' % root, 'w') as fh:
@@ -220,7 +226,7 @@ def parse_args():
         description="Build tutorial docs from a Jupyter notebook template")
     parser.add_argument("filename",
         help="Root name of the notebook template (e.g. 'foo' to use "
-             ".template/foo.ipynb)")
+             "%sfoo.ipynb)" % TEMPLATE)
     parser.add_argument("--branch",
                   default=None,
                   help="Override automatically-determined git branch")
@@ -270,7 +276,7 @@ def make_doxyfile(root, tags):
 def run_doxygen():
     subprocess.check_call(['doxygen', 'Doxyfile'])
     if not os.path.exists('html/images'):
-        os.symlink('../.template/images', 'html/images')
+        os.symlink('../images', 'html/images')
 
 
 def get_git_branch():

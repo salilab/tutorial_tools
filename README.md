@@ -116,7 +116,7 @@ of the tutorial will be found under a subdirectory named for the branch, e.g.
 Tutorials can also be generated using a slightly-modified Jupyter Notebook
 as the input. (This is still in development.)
 
-Given a template notebook, `.template/foo.ipynb`, running the script
+Given a template notebook, `.template.foo.ipynb`, running the script
 `notebook/process_notebook.py foo` will generate:
  - `foo.ipynb`, a standard Jupyter notebook, suitable for general use
  - `foo.py`, a simple Python script that can be run in a regular Python session
