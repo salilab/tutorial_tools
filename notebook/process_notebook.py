@@ -275,7 +275,7 @@ def make_doxyfile(root, tags):
 
 def run_doxygen():
     subprocess.check_call(['doxygen', 'Doxyfile'])
-    if not os.path.exists('html/images'):
+    if not os.path.exists('html/images') and os.path.exists('images'):
         os.symlink('../images', 'html/images')
 
 
