@@ -142,6 +142,34 @@ def get_only_notebook_cells(cells):
     return get_cell_subset(cells, excludestr='%%nbexclude')
 
 
+class ScriptWriter(object):
+    def get_filename(self, root):
+        return root + '.' + self.file_ext
+
+    def postprocess(self, script_filename):
+        pass
+
+    def write(self, root, cells):
+        fname = self.get_filename(root)
+        with open(fname, 'w') as fh:
+            first = True
+            for cell in cells:
+                if cell['cell_type'] == 'code':
+                    if not first:
+                        fh.write('\n')
+                    write_cell(cell, fh)
+                    first = False
+        self.postprocess(fname)
+
+
+class PythonScriptWriter(ScriptWriter):
+    file_ext = 'py'
+
+
+class BashScriptWriter(ScriptWriter):
+    file_ext = 'sh'
+
+
 def generate_files(root, tags):
     rl = RefLinks()
     for t in tags:
@@ -150,21 +178,18 @@ def generate_files(root, tags):
     # Read in the template
     with open('%s%s.ipynb' % (TEMPLATE, root)) as fh:
         j = json.load(fh)
+    kernel = j['metadata']['kernelspec']
+    language = kernel['language']
 
     # Handle our custom magics and @ref links
     for cell in j['cells']:
         if cell['cell_type'] == 'markdown':
             cell['source'] = list(patch_source(cell['source'], rl))
 
-    # Write plain Python script
-    with open('%s.py' % root, 'w') as fh:
-        first = True
-        for cell in j['cells']:
-            if cell['cell_type'] == 'code':
-                if not first:
-                    fh.write('\n')
-                write_cell(cell, fh)
-                first = False
+    # Write plain Python or Bash script
+    writer = {'python': PythonScriptWriter,
+              'bash': BashScriptWriter}[language]()
+    writer.write(root, j['cells'])
 
     # Write markdown suitable for processing with doxygen
     with open('%s.md' % root, 'w') as fh:
