@@ -70,11 +70,10 @@ class RefLinks(object):
                 name = c.find('name').text
                 url = urltop + c.find('filename').text
                 self.refs[name] = url
-                if c.attrib['kind'] == 'class':
-                    self._add_member_tags(c, name, urltop)
+                self._add_member_tags(c, name, urltop)
 
     def _add_member_tags(self, cls, clsname, urltop):
-        """Add doxygen tags for class members"""
+        """Add doxygen tags for class or namespace members"""
         for meth in cls:
             if (meth.tag == 'member' and meth.attrib.get('kind') == 'function'):
                 methname = meth.find('name').text
