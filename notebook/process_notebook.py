@@ -174,7 +174,7 @@ class BashScriptWriter(ScriptWriter):
     file_ext = 'sh'
 
     def write_header(self, fh):
-        fh.write("#!/bin/sh\n\n")
+        fh.write("#!/bin/sh -e\n\n")
 
 
 def generate_files(root, tags):
