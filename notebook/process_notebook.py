@@ -147,11 +147,13 @@ class ScriptWriter(object):
         return root + '.' + self.file_ext
 
     def postprocess(self, script_filename):
-        pass
+        # make executable
+        os.chmod(script_filename, 0o755)
 
     def write(self, root, cells):
         fname = self.get_filename(root)
         with open(fname, 'w') as fh:
+            self.write_header(fh)
             first = True
             for cell in cells:
                 if cell['cell_type'] == 'code':
@@ -165,9 +167,15 @@ class ScriptWriter(object):
 class PythonScriptWriter(ScriptWriter):
     file_ext = 'py'
 
+    def write_header(self, fh):
+        fh.write("#!/usr/bin/env python3\n\n")
+
 
 class BashScriptWriter(ScriptWriter):
     file_ext = 'sh'
+
+    def write_header(self, fh):
+        fh.write("#!/bin/sh\n\n")
 
 
 def generate_files(root, tags):
