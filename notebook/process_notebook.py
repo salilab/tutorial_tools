@@ -113,10 +113,17 @@ def patch_source(source, rl):
         else:
             yield rl.fix_links(c)
 
-non_jupyter_constructs = re.compile('\[TOC\]|\{#[^\s}]+\}|%%(html|nb)exclude')
-def remove_non_jupyter(source, rl):
+
+non_jupyter_constructs = re.compile('%%(html|nb)exclude')
+jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
+def patch_jupyter(source, rl, toc):
     for c in source:
-        yield re.sub(non_jupyter_constructs, '', c)
+        if '[TOC]' in c:
+            yield toc.get_markdown()
+        else:
+            nc = re.sub(non_jupyter_constructs, '', c)
+            nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', nc)
+            yield nc
 
 
 def write_cell(cell, fh):
@@ -177,10 +184,43 @@ class BashScriptWriter(ScriptWriter):
         fh.write("#!/bin/sh -e\n\n")
 
 
+class TableOfContents(object):
+    anchor_re = re.compile('(#+)\s+(.*?)\s*\{#([^\s}]+)\}')
+
+    def __init__(self):
+        self.entries = [] # list of (level, title, anchor) tuples
+
+    def parse_cell(self, source):
+        def get_sections(source):
+            for s in source:
+                m = self.anchor_re.match(s)
+                if m:
+                    yield len(m.group(1)), m.group(2), m.group(3)
+        for level, title, anchor in get_sections(source):
+            if self.entries and level > self.entries[-1][0] + 1:
+                raise ValueError("A level-%d heading (%s) cannot follow a "
+                    "level-%d heading (%s)"
+                    % (level, title, self.entries[-1][0], self.entries[-1][1]))
+            elif not self.entries and level != 1:
+                raise ValueError(
+                    "Top-level section (%s) is not a level one heading "
+                    "(use '# title {#anchor}')" % title)
+            self.entries.append((level, title, anchor))
+
+    def get_markdown(self):
+        def get_entry_markdown(e):
+            level, title, anchor = e
+            return '%s- [%s](#%s)' % (' ' * level, title, anchor)
+        return("**Table of contents**\n\n"
+               + "\n".join(get_entry_markdown(e) for e in self.entries))
+
+
 def generate_files(root, tags):
     rl = RefLinks()
     for t in tags:
         rl.parse_doxygen_tag_file(t.xml_filename, t.doctop)
+
+    toc = TableOfContents()
 
     # Read in the template
     with open('%s%s.ipynb' % (TEMPLATE, root)) as fh:
@@ -191,6 +231,7 @@ def generate_files(root, tags):
     # Handle our custom magics and @ref links
     for cell in j['cells']:
         if cell['cell_type'] == 'markdown':
+            toc.parse_cell(cell['source'])
             cell['source'] = list(patch_source(cell['source'], rl))
 
     # Write plain Python or Bash script
@@ -208,11 +249,11 @@ def generate_files(root, tags):
                 write_cell(cell, fh)
                 fh.write('\\endcode\n')
 
-    # Remove constructs that Jupyter doesn't understand from the JSON
+    # Remove or modify constructs that Jupyter doesn't understand from the JSON
     j['cells'] = list(get_only_notebook_cells(j['cells']))
     for cell in j['cells']:
         if cell['cell_type'] == 'markdown':
-            cell['source'] = list(remove_non_jupyter(cell['source'], rl))
+            cell['source'] = list(patch_jupyter(cell['source'], rl, toc))
 
     # Write Jupyter notebook
     with open('%s.ipynb' % root, 'w') as fh:
