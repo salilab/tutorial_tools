@@ -119,7 +119,8 @@ jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
 def patch_jupyter(source, rl, toc):
     for c in source:
         if '[TOC]' in c:
-            yield toc.get_markdown()
+            for md in toc.get_markdown():
+                yield md
         else:
             nc = re.sub(non_jupyter_constructs, '', c)
             nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', nc)
@@ -208,11 +209,10 @@ class TableOfContents(object):
             self.entries.append((level, title, anchor))
 
     def get_markdown(self):
-        def get_entry_markdown(e):
-            level, title, anchor = e
-            return '%s- [%s](#%s)' % (' ' * level, title, anchor)
-        return("**Table of contents**\n\n"
-               + "\n".join(get_entry_markdown(e) for e in self.entries))
+        yield "**Table of contents**\n"
+        yield "\n"
+        for level, title, anchor in self.entries:
+            yield '%s- [%s](#%s)\n' % (' ' * level, title, anchor)
 
 
 def generate_files(root, tags):
