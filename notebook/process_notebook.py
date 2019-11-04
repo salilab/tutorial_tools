@@ -225,6 +225,12 @@ def generate_files(root, tags):
     # Read in the template
     with open('%s%s.ipynb' % (TEMPLATE, root)) as fh:
         j = json.load(fh)
+
+    # Make sure all outputs are empty
+    for cell in j['cells']:
+        if cell.get('outputs'):
+            raise ValueError("Please clear all cell outputs first!")
+
     kernel = j['metadata']['kernelspec']
     language = kernel['language']
 
