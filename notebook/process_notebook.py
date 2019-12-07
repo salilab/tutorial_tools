@@ -18,6 +18,12 @@ IMP_STABLE_RELEASE = '2.12.0'
 DOXDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       '..', 'doxygen'))
 
+# Top of repository
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      '..', '..', '..'))
+if not os.path.exists(os.path.join(TOPDIR, 'support')):
+    raise ValueError("Could not determine top directory of repository")
+
 # Template prefix
 TEMPLATE = ".template."
 
@@ -439,7 +445,9 @@ def get_license_link():
 
 
 def patch_html(filename, repo, source, branch, license_link):
-    edit_link = '  $(\'#main-menu\').append(\'<li style="float:right"><div id="github_edit"><a href="https://github.com/salilab/%s/blob/%s/doc/%s"><i class="fab fa-github"></i> Edit on GitHub</a></div></li>\');\n' % (repo, branch, source)
+    # Path to Jupyter notebook relative to the top of the repo
+    path = os.path.relpath(os.getcwd(), TOPDIR)
+    edit_link = '  $(\'#main-menu\').append(\'<li style="float:right"><div id="github_edit"><a href="https://github.com/salilab/%s/blob/%s/%s/.template.%s.ipynb"><i class="fab fa-github"></i> Edit on GitHub</a></div></li>\');\n' % (repo, branch, path, source[:-3])
 
     with open(filename) as fh:
         contents = fh.readlines()
