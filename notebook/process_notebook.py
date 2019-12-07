@@ -434,13 +434,13 @@ def get_license():
     fname = os.path.join(TOPDIR, 'LICENSE')
     if not os.path.exists(fname):
         return ''
-    with open(fname) as fh:
+    with open(fname, 'rb') as fh:
         return fh.read()
 
 
 def get_license_link():
     license = get_license()
-    if 'Attribution-ShareAlike 4.0 International' in license:
+    if b'Attribution-ShareAlike 4.0 International' in license:
         return """
 <div class="doxlicense">
   <a href="https://creativecommons.org/licenses/by-sa/4.0/"
