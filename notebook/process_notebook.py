@@ -423,7 +423,7 @@ def get_page_map():
 
 
 def get_license():
-    fname = '../LICENSE'
+    fname = os.path.join(TOPDIR, 'LICENSE')
     if not os.path.exists(fname):
         return ''
     with open(fname) as fh:
