@@ -21,10 +21,16 @@ DOXDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       '..', 'doxygen'))
 
 # Top of repository
-TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      '..', '..', '..'))
-if not os.path.exists(os.path.join(TOPDIR, 'support')):
-    raise ValueError("Could not determine top directory of repository")
+def _get_topdir():
+    parents = 0
+    path = '.git'
+    while not os.path.exists(path):
+        path = os.path.join('..', path)
+        parents += 1
+        if parents > 20:
+            raise ValueError("Could not determine top directory of repository")
+    return path[:-4]
+TOPDIR = os.path.abspath(_get_topdir())
 
 # Template prefix
 TEMPLATE = ".template."
