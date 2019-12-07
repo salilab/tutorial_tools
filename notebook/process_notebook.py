@@ -271,6 +271,7 @@ def generate_files(root, tags):
         for cell in get_only_html_cells(j['cells']):
             if cell['cell_type'] == 'markdown':
                 write_cell(cell, fh)
+                fh.write('\n')
             elif cell['cell_type'] == 'code':
                 fh.write('\\code{.py}\n')
                 write_cell(cell, fh)
