@@ -116,15 +116,19 @@ def patch_source(source, rl):
 
 non_jupyter_constructs = re.compile('%%(html|nb)exclude')
 jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
-def patch_jupyter(source, rl, toc):
-    for c in source:
-        if '[TOC]' in c:
-            for md in toc.get_markdown():
-                yield md
-        else:
-            nc = re.sub(non_jupyter_constructs, '', c)
-            nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', nc)
-            yield nc
+def patch_jupyter(source, rl, toc, is_markdown):
+    if is_markdown:
+        for c in source:
+            if '[TOC]' in c:
+                for md in toc.get_markdown():
+                    yield md
+            else:
+                nc = re.sub(non_jupyter_constructs, '', c)
+                nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', nc)
+                yield nc
+    else:
+        for c in source:
+            yield re.sub(non_jupyter_constructs, '', c)
 
 
 def write_cell(cell, fh):
@@ -275,8 +279,8 @@ def generate_files(root, tags):
     # Remove or modify constructs that Jupyter doesn't understand from the JSON
     j['cells'] = list(get_only_notebook_cells(j['cells']))
     for cell in j['cells']:
-        if cell['cell_type'] == 'markdown':
-            cell['source'] = list(patch_jupyter(cell['source'], rl, toc))
+        cell['source'] = list(patch_jupyter(cell['source'], rl, toc,
+                                            cell['cell_type'] == 'markdown'))
 
     # Write Jupyter notebook
     with open('%s.ipynb' % root, 'w') as fh:
