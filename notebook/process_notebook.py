@@ -128,7 +128,7 @@ def patch_source(source, rl):
             yield rl.fix_links(c)
 
 
-non_jupyter_constructs = re.compile('%%(html|nb)exclude')
+non_jupyter_constructs = re.compile('#?%%(html|nb)exclude')
 jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
 def patch_jupyter(source, rl, toc, is_markdown):
     if is_markdown:
@@ -137,18 +137,21 @@ def patch_jupyter(source, rl, toc, is_markdown):
                 for md in toc.get_markdown():
                     yield md
             else:
-                nc = re.sub(non_jupyter_constructs, '', c)
-                nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', nc)
-                yield nc
+                if not non_jupyter_constructs.match(c):
+                    nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', c)
+                    yield nc
     else:
         for c in source:
-            yield re.sub(non_jupyter_constructs, '', c)
+            if not non_jupyter_constructs.match(c):
+                yield c
 
 
 def write_cell(cell, fh):
     for s in cell['source']:
         if (not s.startswith('%%htmlexclude')
-            and not s.startswith('%%nbexclude')):
+            and not s.startswith('#%%htmlexclude')
+            and not s.startswith('%%nbexclude')
+            and not s.startswith('#%%nbexclude')):
             fh.write(s)
     fh.write('\n')
 

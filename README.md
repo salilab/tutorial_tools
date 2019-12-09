@@ -138,8 +138,11 @@ regular Jupyter notebooks:
  - The special command `[TOC]` will generate a table of contents.
  - Custom anchors can be added to headings, of the form
    `# Heading {#anchor}`.
- - A cell starting with `%%nbexclude` will be excluded from the notebook output.
- - A cell starting with `%%htmlexclude` will be excluded from the HTML output.
+ - A cell starting with `%%nbexclude` will be excluded from the notebook output
+   (`#%%nbexclude` can also be used, which prevents Jupyter from complaining
+   about a magic it doesn't understand in a code cell).
+ - A cell starting with `%%htmlexclude` (or `#%%htmlexclude`) will be
+   excluded from the HTML output.
 
 Otherwise, normal Jupyter notebook syntax can be used. To include an image,
 it's recommended to use HTML syntax rather than Markdown so that the size and
