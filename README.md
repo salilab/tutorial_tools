@@ -145,6 +145,4 @@ Otherwise, normal Jupyter notebook syntax can be used. To include an image,
 it's recommended to use HTML syntax rather than Markdown so that the size and
 caption can be precisely controlled in the HTML output, e.g.:
 
-    ```
     <img src="images/links.png" width="700px" title="Nup84 file linkage" />
-    ```
