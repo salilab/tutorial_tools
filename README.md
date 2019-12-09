@@ -135,8 +135,7 @@ regular Jupyter notebooks:
    can also be used to refer to Python objects from that URL. For example,
    after using `%intersphinx https://docs.python.org/3` links can be made
    to Python standard library objects, e.g. `@ref itertools`.
- - The special command `[TOC]` will generate a table of contents in the
-   HTML output.
+ - The special command `[TOC]` will generate a table of contents.
  - Custom anchors can be added to headings, of the form
    `# Heading {#anchor}`.
  - A cell starting with `%%nbexclude` will be excluded from the notebook output.
