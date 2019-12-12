@@ -239,6 +239,9 @@ class TableOfContents(object):
                 yield s
 
     def parse_cell(self, source):
+        # Don't include %%nbexclude cells in TOC
+        if source and '%%nbexclude' in source[0]:
+            return
         def get_sections(source):
             for s in source:
                 m = self.anchor_re.match(s)
