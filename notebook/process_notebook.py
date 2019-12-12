@@ -82,18 +82,28 @@ class RefLinks(object):
             if (c.tag == 'compound'
                 and c.attrib.get('kind') in ('class', 'namespace')):
                 name = c.find('name').text
+                base = c.find('base')
+                if base is not None:
+                    base = base.text
                 url = urltop + c.find('filename').text
                 self.refs[name] = url
-                self._add_member_tags(c, name, urltop)
+                self._add_member_tags(c, name, base, urltop)
 
-    def _add_member_tags(self, cls, clsname, urltop):
+    def _add_member_tags(self, cls, clsname, clsbase, urltop):
         """Add doxygen tags for class or namespace members"""
+        # doxygen tag files sometimes include tags for the base class under
+        # the <compound> tag for a derived class. Work around this by checking
+        # to see if the file linked to matches the name of the base class.
+        if clsbase:
+            base_suffix = clsbase.replace('::', '_1_1') + '.html'
         for meth in cls:
             if (meth.tag == 'member' and meth.attrib.get('kind') == 'function'):
                 methname = meth.find('name').text
-                url = (urltop + meth.find('anchorfile').text
-                       + '#' + meth.find('anchor').text)
+                anchorfile = meth.find('anchorfile').text
+                url = (urltop + anchorfile + '#' + meth.find('anchor').text)
                 self.refs[clsname + '::' + methname] = url
+                if clsbase and anchorfile.endswith(base_suffix):
+                    self.refs[clsbase + '::' + methname] = url
 
     def _replace_backtick_link(self, m):
         txt = m.group(1)
