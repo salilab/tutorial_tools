@@ -88,6 +88,15 @@ class RefLinks(object):
                 url = urltop + c.find('filename').text
                 self.refs[name] = url
                 self._add_member_tags(c, name, base, urltop)
+            elif c.tag == 'compound' and c.attrib.get('kind') == 'page':
+                self._add_page_tags(c, urltop)
+
+    def _add_page_tags(self, page, urltop):
+        """Add doxygen tags for page anchors"""
+        for child in page:
+            if child.tag == 'docanchor':
+                url = urltop + '/' + child.attrib['file'] + '.html'
+                self.refs[child.text] = url
 
     def _add_member_tags(self, cls, clsname, clsbase, urltop):
         """Add doxygen tags for class or namespace members"""
