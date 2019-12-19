@@ -58,6 +58,7 @@ def get_cached_url(url, local):
 
 class RefLinks(object):
     """Handle doxygen-style @ref links in markdown"""
+    include_re = re.compile(r'%%include\s+([^\s)]+)')
     backtick_link = re.compile(r'``([^\s`]+)``')
     ref_link = re.compile('@ref\s+([^\s)]+)')
 
@@ -132,8 +133,15 @@ class RefLinks(object):
             raise ValueError("Bad @ref link to %s" % ref)
         return link
 
+    def _include_file(self, m):
+        filename = m.group(1)
+        with open(filename) as fh:
+            return fh.read()
+
     def fix_links(self, c):
-        """Modify and return `c` to replace any @ref links with URLs"""
+        """Modify and return `c` to replace any @ref links with URLs,
+           and any %%include magics with file contents"""
+        c = re.sub(self.include_re, self._include_file, c)
         c = re.sub(self.backtick_link, self._replace_backtick_link, c)
         return re.sub(self.ref_link, self._replace_ref_link, c)
 
