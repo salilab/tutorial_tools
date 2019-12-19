@@ -93,6 +93,9 @@ class RefLinks(object):
 
     def _add_page_tags(self, page, urltop):
         """Add doxygen tags for page anchors"""
+        name = page.find('name').text
+        filename = page.find('filename').text
+        self.refs[name] = urltop + filename + '.html'
         for child in page:
             if child.tag == 'docanchor':
                 url = urltop + child.attrib['file'] + '.html#' + child.text
