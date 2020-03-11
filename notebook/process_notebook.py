@@ -158,6 +158,7 @@ def patch_source(source, rl):
             yield rl.fix_links(c)
 
 
+_file_link_re = re.compile('@file\s+([^\s)]+)')
 non_jupyter_constructs = re.compile('#?%%(html|nb)exclude')
 jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
 def patch_jupyter(source, rl, toc, is_markdown):
@@ -169,6 +170,7 @@ def patch_jupyter(source, rl, toc, is_markdown):
             else:
                 if not non_jupyter_constructs.match(c):
                     nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', c)
+                    nc = _file_link_re.sub('\\1.ipynb', nc)
                     yield nc
     else:
         for c in source:
@@ -182,7 +184,7 @@ def write_cell(cell, fh):
             and not s.startswith('#%%htmlexclude')
             and not s.startswith('%%nbexclude')
             and not s.startswith('#%%nbexclude')):
-            fh.write(s)
+            fh.write(_file_link_re.sub('\\1.html', s))
     fh.write('\n')
 
 
@@ -209,16 +211,18 @@ class ScriptWriter(object):
         os.chmod(script_filename, 0o755)
 
     def write(self, root, cells):
+        code_cells = [c for c in cells if c['cell_type'] == 'code']
+        if not code_cells:
+            return
         fname = self.get_filename(root)
         with open(fname, 'w') as fh:
             self.write_header(fh)
             first = True
-            for cell in cells:
-                if cell['cell_type'] == 'code':
-                    if not first:
-                        fh.write('\n')
-                    write_cell(cell, fh)
-                    first = False
+            for cell in code_cells:
+                if not first:
+                    fh.write('\n')
+                write_cell(cell, fh)
+                first = False
         self.postprocess(fname)
 
 
@@ -375,8 +379,8 @@ def get_tag_files(imp_version):
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Build tutorial docs from a Jupyter notebook template")
-    parser.add_argument("filename",
-        help="Root name of the notebook template (e.g. 'foo' to use "
+    parser.add_argument("filename", nargs="+",
+        help="Root name of the notebook template(s) (e.g. 'foo' to use "
              "%sfoo.ipynb)" % TEMPLATE)
     parser.add_argument("--branch",
                   default=None,
@@ -398,7 +402,7 @@ def make_doxyfile(root, tags):
             elif line.startswith('PROJECT_NAME '):
                 line = 'PROJECT_NAME = "%s"\n' % title
             elif line.startswith('INPUT '):
-                line = 'INPUT = %s.md\n' % root
+                line = 'INPUT = %s\n' % " ".join("%s.md" % m for m in root)
             elif line.startswith('SEARCHENGINE '):
                 line = 'SEARCHENGINE = NO\n'
             elif line.startswith('TOC_INCLUDE_HEADINGS '):
@@ -459,6 +463,8 @@ def get_page_map():
     m = {}
     page_name_md_re = re.compile(r'{#(\S+)}')
     for md in glob.glob("*.md"):
+        if md == "README.md":
+            continue
         pagename = get_pagename(md, page_name_md_re)
         if pagename == 'mainpage':
             pagename = 'index'
@@ -542,7 +548,8 @@ def main():
 
     tags = get_tag_files(imp_version)
 
-    generate_files(args.filename, tags)
+    for f in args.filename:
+        generate_files(f, tags)
     make_doxyfile(args.filename, tags)
     run_doxygen()
     add_html_links(branch)

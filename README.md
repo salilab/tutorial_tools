@@ -119,8 +119,11 @@ as the input. (This is still in development.)
 Given a template notebook, `.template.foo.ipynb`, running the script
 `notebook/process_notebook.py foo` will generate:
  - `foo.ipynb`, a standard Jupyter notebook, suitable for general use
- - `foo.py`, a simple Python script that can be run in a regular Python session
- - `foo.md`, markdown suitable for further processing with doxygen (above)
+ - `foo.py` or `foo.sh`, a simple Python or shell script that can be run
+   standalone (to generate a Bash script, install and use a Jupyter Bash kernel
+   such as [Calysto Bash](https://github.com/Calysto/calysto_bash))
+ - `foo.md`, markdown which is further processed using doxygen to generate HTML
+   files in the `html` subdirectory
 
 The template notebook allows for additional functionality not present in
 regular Jupyter notebooks:
@@ -146,8 +149,30 @@ regular Jupyter notebooks:
  - A cell starting with `%%htmlexclude` (or `#%%htmlexclude`) will be
    excluded from the HTML output.
 
-Otherwise, normal Jupyter notebook syntax can be used. To include an image,
-it's recommended to use HTML syntax rather than Markdown so that the size and
+The notebook should start with a title and `#mainpage` anchor of the form
+
+    My title {#mainpage}
+    ========
+
+To include images, put them in an `images` subdirectory. 
+It's recommended to use HTML syntax rather than Markdown so that the size and
 caption can be precisely controlled in the HTML output, e.g.:
 
     <img src="images/links.png" width="700px" title="Nup84 file linkage" />
+
+Otherwise, normal Jupyter notebook syntax can be used.
+
+A tutorial can consist of multiple notebooks (see the
+[FoXS tutorial](https://github.com/salilab/foxs_tutorial/) for an example).
+In this case
+
+ - All the notebooks should be in the same directory.
+ - Each notebook should start with a title (as above). Exactly one notebook
+   should use the `#mainpage` anchor; every other notebook should use
+   a different anchor (usually the name of the file).
+ - Anchors should be unique across all notebooks.
+ - To link to the notebook `foo`, use the link syntax `[link text](@file foo)`.
+ - Outputs are generated using the `process_notebook.py` script as above;
+   simply list all notebooks on the command line. For example, given notebooks
+   `.template.foo.ipynb` and `.template.bar.ipynb`, running
+   the script `process_notebook.py foo bar` will generate all outputs.
