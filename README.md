@@ -129,7 +129,8 @@ The template notebook allows for additional functionality not present in
 regular Jupyter notebooks:
  - doxygen-style links of the form `[foo](@ref bar)` can be used. `@ref bar`
    will be replaced with the full URL for the identifier `bar`. `bar` can
-   be any IMP class, method or module name (e.g. IMP.atom.Selection, IMP::pmi)
+   be any IMP class, method or module name (e.g. IMP.atom.Selection, IMP::pmi),
+   an IMP header (e.g. IMP/Restraint.h, IMP/core/Harmonic.h),
    or any identifier read with `%intersphinx` (see below).
  - The \`\`foo\`\` syntax is shorthand for `[foo](@ref foo)`.
  - The \`\`~x.y.z.foo\`\` syntax is shorthand for `[foo](@ref x.y.z.foo)`. 

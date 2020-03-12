@@ -106,6 +106,11 @@ class RefLinks(object):
                 anchorfile = child.find('anchorfile').text
                 url = urltop + anchorfile + '#' + child.find('anchor').text
                 self.refs[namespace + '::' + name] = url
+        name = page.find('name').text
+        if name.endswith('.h'):
+            fullname = 'IMP/' + name
+            filename = page.find('filename').text
+            self.refs[fullname] = urltop + filename + '.html'
 
     def _add_page_tags(self, page, urltop):
         """Add doxygen tags for page anchors"""
