@@ -198,13 +198,24 @@ def patch_jupyter(source, rl, toc, is_markdown):
                 yield c
 
 
+_triple_backtick_re = re.compile('```(\S+)')
 def write_cell(cell, fh):
+    def tb_sub(m):
+        # Jupyter markdown expects a language name, e.g. ```python
+        # but Doxygen expects a file extension, e.g. ```py
+        # so map one to the other
+        lang = m.group(1)
+        lang_replace = {'python': 'py', 'c++': 'cpp'}
+        lang = lang_replace.get(lang, lang)
+        return '```' + lang
     for s in cell['source']:
         if (not s.startswith('%%htmlexclude')
             and not s.startswith('#%%htmlexclude')
             and not s.startswith('%%nbexclude')
             and not s.startswith('#%%nbexclude')):
-            fh.write(_file_link_re.sub('\\1.html', s))
+            contents = _file_link_re.sub('\\1.html', s)
+            contents = _triple_backtick_re.sub(tb_sub, contents)
+            fh.write(contents)
     fh.write('\n')
 
 
