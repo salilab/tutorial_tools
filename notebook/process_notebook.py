@@ -91,6 +91,21 @@ class RefLinks(object):
                 self._add_member_tags(c, name, base, urltop)
             elif c.tag == 'compound' and c.attrib.get('kind') == 'page':
                 self._add_page_tags(c, urltop)
+            elif c.tag == 'compound' and c.attrib.get('kind') == 'file':
+                self._add_file_tags(c, urltop)
+
+    def _add_file_tags(self, page, urltop):
+        """Add doxygen tags for file objects"""
+        namespace = None
+        for child in page:
+            if child.tag == 'namespace':
+                namespace = child.text
+            if (namespace and child.tag == 'member'
+                and child.attrib.get('kind') == 'typedef'):
+                name = child.find('name').text
+                anchorfile = child.find('anchorfile').text
+                url = urltop + anchorfile + '#' + child.find('anchor').text
+                self.refs[namespace + '::' + name] = url
 
     def _add_page_tags(self, page, urltop):
         """Add doxygen tags for page anchors"""
