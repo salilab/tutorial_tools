@@ -212,7 +212,8 @@ def write_cell(cell, fh):
         if (not s.startswith('%%htmlexclude')
             and not s.startswith('#%%htmlexclude')
             and not s.startswith('%%nbexclude')
-            and not s.startswith('#%%nbexclude')):
+            and not s.startswith('#%%nbexclude')
+            and not s.startswith('%matplotlib')):
             contents = _file_link_re.sub('\\1.html', s)
             contents = _triple_backtick_re.sub(tb_sub, contents)
             fh.write(contents)
