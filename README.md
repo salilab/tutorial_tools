@@ -161,6 +161,13 @@ caption can be precisely controlled in the HTML output, e.g.:
 
     <img src="images/links.png" width="700px" title="Nup84 file linkage" />
 
+All cell outputs in the template notebook should be cleared. If you want to
+include pregenerated outputs in the notebook and HTML output, use the
+`--output` option to the `process_notebook.py` script. This will run all of
+the cells in order and add stdout or matplotlib plots. See the
+[cross-linking tutorial](https://github.com/salilab/cross_linking_tutorial)
+for an example.
+
 Otherwise, normal Jupyter notebook syntax can be used.
 
 A tutorial can consist of multiple notebooks (see the
