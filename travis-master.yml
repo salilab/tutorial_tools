@@ -16,4 +16,4 @@ install:
   - source $HOME/conda/bin/activate python$TRAVIS_PYTHON_VERSION
   - python -V
 script:
-  - nosetests --exe support/test
+  - python -m nose --exe support/test
