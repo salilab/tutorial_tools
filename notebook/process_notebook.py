@@ -171,7 +171,9 @@ class RefLinks(object):
 
 def patch_source(source, rl):
     for c in source:
-        if c.startswith('%intersphinx'):
+        if c.startswith('%gencelloutputs'):
+            pass
+        elif c.startswith('%intersphinx'):
             url = c.split()[1]
             objfile_url = posixpath.join(url, 'objects.inv')
             objfile = get_cached_url(url=objfile_url,
@@ -429,12 +431,13 @@ class FileGenerator(object):
         self.tags = tags
         self._file_counter = 0
 
-    def generate_files(self, root, output_writer=None):
+    def generate_files(self, root, output_writer):
         self._file_counter += 1
         _generate_files(root, self.tags, self._file_counter, output_writer)
 
 
-def _generate_files(root, tags, file_counter, output_writer=None):
+def _generate_files(root, tags, file_counter, output_writer):
+    gen_output = False
     rl = RefLinks()
     for t in tags:
         rl.parse_doxygen_tag_file(t.xml_filename, t.doctop)
@@ -458,12 +461,14 @@ def _generate_files(root, tags, file_counter, output_writer=None):
         if cell['cell_type'] == 'markdown':
             cell['source'] = list(toc.add_missing_anchors(cell['source']))
             toc.parse_cell(cell['source'])
+            gen_output = gen_output or any(c.startswith('%gencelloutputs')
+                                           for c in cell['source'])
             cell['source'] = list(patch_source(cell['source'], rl))
 
     # Write plain Python or Bash script
-    # This also populates cell outputs if output_writer is set
+    # This also populates cell outputs if gen_output is set
     writer = {'python': PythonScriptWriter,
-              'bash': BashScriptWriter}[language](output_writer is not None)
+              'bash': BashScriptWriter}[language](gen_output)
     writer.write(root, j['cells'])
 
     # Write markdown suitable for processing with doxygen
@@ -476,7 +481,7 @@ def _generate_files(root, tags, file_counter, output_writer=None):
                 fh.write('\\code{.py}\n')
                 write_cell(cell, fh)
                 fh.write('\\endcode\n')
-                if output_writer is not None and cell['outputs']:
+                if gen_output and cell['outputs']:
                     output_writer.write(cell, fh)
 
     # Remove or modify constructs that Jupyter doesn't understand from the JSON
@@ -530,10 +535,6 @@ def parse_args():
     parser.add_argument("filename", nargs="+",
         help="Root name of the notebook template(s) (e.g. 'foo' to use "
              "%sfoo.ipynb)" % TEMPLATE)
-    parser.add_argument("--output", nargs="+",
-        help="Root name of notebook template(s) to process and add cell "
-             "outputs to (by running embedded Python code). e.g. 'foo' to "
-             "use %sfoo.ipynb." % TEMPLATE)
     parser.add_argument("--branch",
                   default=None,
                   help="Override automatically-determined git branch")
@@ -700,14 +701,11 @@ def main():
 
     tags = get_tag_files(imp_version)
 
+    cow = CellOutputWriter('html')
     g = FileGenerator(tags)
     for f in args.filename:
-        g.generate_files(f)
-    if args.output:
-        cow = CellOutputWriter('html')
-        for f in args.output:
-            g.generate_files(f, output_writer=cow)
-    make_doxyfile(args.filename + args.output, tags)
+        g.generate_files(f, output_writer=cow)
+    make_doxyfile(args.filename, tags)
     run_doxygen()
     add_html_links(branch)
     fix_menu_links(imp_version)

@@ -163,8 +163,8 @@ caption can be precisely controlled in the HTML output, e.g.:
 
 All cell outputs in the template notebook should be cleared. If you want to
 include pregenerated outputs in the notebook and HTML output, use the
-`--output` option to the `process_notebook.py` script. This will run all of
-the cells in order and add stdout or matplotlib plots. See the
+`%gencelloutputs` magic in any markdown cell in your template notebook. This
+will run all of the cells in order and add stdout or matplotlib plots. See the
 [cross-linking tutorial](https://github.com/salilab/cross_linking_tutorial)
 for an example.
 
