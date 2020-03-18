@@ -177,3 +177,8 @@ img.inline {
   margin-right: auto;
   display: block;
 }
+
+div.output {
+  margin-left: 2em;
+  font-size: small;
+}
