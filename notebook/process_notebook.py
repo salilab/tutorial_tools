@@ -13,7 +13,7 @@ import posixpath
 import subprocess
 import xml.etree.ElementTree as ET
 from inventory import InventoryFile
-from urllib.request import urlopen
+import urllib.request
 
 
 # Latest IMP stable release
@@ -53,7 +53,10 @@ def get_cached_url(url, local):
     fname = os.path.join(CACHE, local)
     # Use file if it already exists and is less than a day old
     if not os.path.exists(fname) or file_age(fname) > 86400:
-        response = urlopen(url)
+        # python.org doesn't allow retrieving objects.inv without a user-agent
+        # string, so provide one
+        r = urllib.request.Request(url, headers={'User-Agent': 'urllib'})
+        response = urllib.request.urlopen(r)
         with open(fname, 'wb') as fh:
             fh.write(response.read())
     return fname
