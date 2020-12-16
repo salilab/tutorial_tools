@@ -1,0 +1,35 @@
+# This is a template configuration file for GitHub Actions, for testing
+# your tutorial regularly. Copy it to .github/workflows/build.yml in the
+# top level directory of your tutorial, in the develop branch.
+
+name: build
+
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: XXXX # Replace with the output of running tutorial_tools/make-cron.py
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [2.7, 3.8]
+        imp-branch: [develop]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Setup conda
+      run: |
+        support/tutorial_tools/setup_travis.sh ~/conda ${{ matrix.imp-branch }} ${{ matrix.python-version }}
+    - name: Test
+      run: |
+        source ~/conda/bin/activate python${{ matrix.python-version }}
+        conda install --yes -q scikit-learn
+        nosetests --exe support/test

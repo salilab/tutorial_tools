@@ -55,12 +55,13 @@ Each file should
 be executable (with a `#!/usr/bin/env python` first line), and use the
 Python `unittest` module.
 
-Then copy a [Travis](https://travis-ci.org/) configuration file to the
-top level directory of your tutorial. For the `master` branch of your
-tutorial, use `cp support/tutorial_tools/travis-master.yml .travis.yml`.
-For other branches such as `develop`, use `travis-develop.yml` instead.
+Then copy a [GitHub Actions](https://github.com/features/actions)
+configuration file to the `.github/workflows/` subdirectory under the top level
+directory of your tutorial. For the `master` branch of your tutorial, use
+`cp support/tutorial_tools/github-master.yml .github/workflows/build.yml`.
+For other branches such as `develop`, use `github-develop.yml` instead.
 
-The `.travis.yml` config file will ensure the tutorial tests
+The `build.yml` config file will ensure the tutorial tests
 get run every time the tutorial is changed (pushed to GitHub) using both
 Python 2 and Python 3, and for the current IMP nightly build and also the
 latest stable release (if applicable).

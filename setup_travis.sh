@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 # Set up an environment to run tests under Travis CI (see toplevel .travis.yml)
+# or GitHub Actions (see toplevel .github/workflows/build.yml)
 
 if [ $# -ne 3 ]; then
   echo "Usage: $0 conda_dir imp_branch python_version"
