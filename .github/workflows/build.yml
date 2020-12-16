@@ -20,7 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install coverage
+        pip install coverage nose
     - name: Test
       run: |
         nosetests --exe --with-coverage --cover-branches test
