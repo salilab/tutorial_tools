@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/salilab/tutorial_tools.svg?branch=master)](https://travis-ci.com/salilab/tutorial_tools)
+[![Build Status](https://github.com/salilab/tutorial_tools/workflows/build/badge.svg?branch=master)](https://github.com/salilab/tutorial_tools/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/salilab/tutorial_tools/branch/master/graph/badge.svg)](https://codecov.io/gh/salilab/tutorial_tools)
 
 This repository contains basic tools that are useful for every IMP
