@@ -1,5 +1,5 @@
-[![Build Status](https://github.com/salilab/tutorial_tools/workflows/build/badge.svg?branch=master)](https://github.com/salilab/tutorial_tools/actions?query=workflow%3Abuild)
-[![codecov](https://codecov.io/gh/salilab/tutorial_tools/branch/master/graph/badge.svg)](https://codecov.io/gh/salilab/tutorial_tools)
+[![Build Status](https://github.com/salilab/tutorial_tools/workflows/build/badge.svg?branch=main)](https://github.com/salilab/tutorial_tools/actions?query=workflow%3Abuild)
+[![codecov](https://codecov.io/gh/salilab/tutorial_tools/branch/main/graph/badge.svg)](https://codecov.io/gh/salilab/tutorial_tools)
 
 This repository contains basic tools that are useful for every IMP
 tutorial. It is intended to be included in each IMP tutorial repository
@@ -32,14 +32,14 @@ Choose a suitable license for the tutorial and put it in a file `LICENSE`.
 We recommend the
 [CC BY-SA license](https://creativecommons.org/licenses/by-sa/4.0/). One way
 to do this is to simply copy
-[this LICENSE file](https://github.com/salilab/imp_coding_tutorial/blob/master/LICENSE).
+[this LICENSE file](https://github.com/salilab/imp_coding_tutorial/blob/main/LICENSE).
 
 Make a simple `README.md` file. Generally a brief description of the tutorial
 and a link to the website (see below) is sufficient content.
 
 ## Branches
 
-  - The `master` branch of your tutorial should work with both the latest stable
+  - The `main` branch of your tutorial should work with both the latest stable
     IMP release *and* the nightly build.
   - The `develop` branch of your tutorial (if present) only needs to work with
     the IMP nightly build - this is for developing new tutorials.
@@ -57,8 +57,8 @@ Python `unittest` module.
 
 Then copy a [GitHub Actions](https://github.com/features/actions)
 configuration file to the `.github/workflows/` subdirectory under the top level
-directory of your tutorial. For the `master` branch of your tutorial, use
-`cp support/tutorial_tools/github-master.yml .github/workflows/build.yml`.
+directory of your tutorial. For the `main` branch of your tutorial, use
+`cp support/tutorial_tools/github-main.yml .github/workflows/build.yml`.
 For other branches such as `develop`, use `github-develop.yml` instead.
 
 The `build.yml` config file will ensure the tutorial tests
@@ -74,12 +74,12 @@ use [doxygen markdown](http://www.doxygen.nl/manual/markdown.html).
 Give each file a label, using `mainpage` for the main page, as described
 in the [doxygen docs](http://www.doxygen.nl/manual/markdown.html#markdown_dox).
 
-See the existing [IMP coding](https://github.com/salilab/imp_coding_tutorial/tree/master/doc)
+See the existing [IMP coding](https://github.com/salilab/imp_coding_tutorial/tree/main/doc)
 or [PMI2](https://github.com/salilab/imp_tutorial/tree/pmi2/doc)
 tutorials for examples.
 
 Any references to IMP classes in the text will be automatically linked by
-doxygen to the IMP manual (the `master` branch of the tutorial to the most
+doxygen to the IMP manual (the `main` branch of the tutorial to the most
 recent IMP release, and other branches to the IMP nightly build). To add
 explicit links to IMP objects or to sections in the IMP manual, use
 the `@ref` notation as described in the
@@ -105,10 +105,10 @@ To format the text, run `../support/tutorial_tools/doxygen/make-docs.py` (it
 requires network access and that you have `doxygen` installed) then open
 `html/index.html` in a web browser.
 
-The formatted tutorial text for the `master` branch will also be deployed
+The formatted tutorial text for the `main` branch will also be deployed
 automatically to `https://integrativemodeling.org/tutorials/<name>` on each
 push to GitHub. (`<name>` is the name of the tutorial GitHub repository,
-with any `imp_` prefix or `_tutorial` suffix removed). Non-`master` branches
+with any `imp_` prefix or `_tutorial` suffix removed). Non-`main` branches
 of the tutorial will be found under a subdirectory named for the branch, e.g.
 `https://integrativemodeling.org/tutorials/<name>/develop/`.
 

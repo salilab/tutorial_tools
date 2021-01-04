@@ -99,7 +99,7 @@ class Tests(unittest.TestCase):
             make_file(tmpdir, "LICENSE",
                       "Attribution-ShareAlike 4.0 International")
             with mock_doxygen(tmpdir):
-                subprocess.check_call([make_docs, '--branch', 'master'],
+                subprocess.check_call([make_docs, '--branch', 'main'],
                                       cwd=docdir)
             with open(os.path.join(docdir, 'html', 'index.html')) as fh:
                 contents = fh.read()

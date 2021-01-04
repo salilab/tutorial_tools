@@ -698,9 +698,9 @@ def main():
     args = parse_args()
     branch = args.branch if args.branch else get_git_branch()
 
-    # master branch of tutorials should work with IMP stable release
+    # main branch of tutorials should work with IMP stable release
     # (and so should link to stable docs); other branches use nightly
-    imp_version = IMP_STABLE_RELEASE if branch == 'master' else 'nightly'
+    imp_version = IMP_STABLE_RELEASE if branch == 'main' else 'nightly'
 
     tags = get_tag_files(imp_version)
 
