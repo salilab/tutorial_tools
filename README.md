@@ -20,13 +20,21 @@ tutorial, with contents similar to:
     description: >
         Longer description of the tutorial, which
         can span multiple lines.
+    depends: [foo, bar]
     show_in_index: false
 
 This metadata is used on the
-[IMP tutorial index](https://integrativemodeling.org/tutorials/) (`title`
-provides a short name for the tutorial, and `description` gives a longer
-text. `show_in_index: false` prevents the tutorial from showing up in the
-index. Remove this line once the tutorial is ready for public consumption.)
+[IMP tutorial index](https://integrativemodeling.org/tutorials/).
+
+ - `title` provides a short name for the tutorial.
+ - `description` gives a longer text.
+ - `depends`, if given, lists other tutorials that are recommended for the user
+   before this one. GitHub repo names can be used here
+   (e.g. `imp_coding_tutorial`) although the `imp_` prefix or `_tutorial`
+   suffix are optional (e.g. `coding` would be equivalent). This controls
+   the ordering of the tutorial list on the website.
+ - `show_in_index: false` prevents the tutorial from showing up in the
+   index. Remove this line once the tutorial is ready for public consumption.
 
 Choose a suitable license for the tutorial and put it in a file `LICENSE`.
 We recommend the
