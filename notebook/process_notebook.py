@@ -187,7 +187,7 @@ def patch_source(source, rl):
 
 
 _file_link_re = re.compile('@file\s+([^\s)]+)')
-non_jupyter_constructs = re.compile('#?%%(html|nb)exclude')
+non_jupyter_constructs = re.compile('#?%%(html|nb|colab)(exclude|only)')
 jupyter_anchor_re = re.compile('\s*\{#([^\s}]+)\}')
 def patch_jupyter(source, rl, toc, is_markdown):
     if is_markdown:
@@ -218,10 +218,10 @@ def write_cell(cell, fh):
         lang = lang_replace.get(lang, lang)
         return '```' + lang
     for s in cell['source']:
-        if (not s.startswith('%%htmlexclude')
-            and not s.startswith('#%%htmlexclude')
-            and not s.startswith('%%nbexclude')
-            and not s.startswith('#%%nbexclude')
+        # Colab-only code cells shouldn't end up in the .py output
+        if s.startswith('#%%colabonly'):
+            return []
+        if (not re.match('#?%%(html|nb|colab)(exclude|only)', s)
             and not s.startswith('%matplotlib')):
             contents = _file_link_re.sub('\\1.html', s)
             contents = _triple_backtick_re.sub(tb_sub, contents)
@@ -263,18 +263,27 @@ class CellOutputWriter(object):
                     fh.write('</div>\n')
 
 
-def get_cell_subset(cells, excludestr):
+def get_cell_subset(cells, excludestr, onlytype):
     for cell in cells:
         if not cell['source'] or excludestr not in cell['source'][0]:
-            yield cell
+            m = re.search('%%(\S+)only', cell['source'][0])
+            if not m or m.group(1) == onlytype:
+                yield cell
 
 
 def get_only_html_cells(cells):
-    return get_cell_subset(cells, excludestr='%%htmlexclude')
+    return get_cell_subset(cells, excludestr='%%htmlexclude',
+                           onlytype='html')
 
 
 def get_only_notebook_cells(cells):
-    return get_cell_subset(cells, excludestr='%%nbexclude')
+    return get_cell_subset(cells, excludestr='%%nbexclude',
+                           onlytype='nb')
+
+
+def get_only_colab_cells(cells):
+    return get_cell_subset(cells, excludestr='%%colabexclude',
+                           onlytype='colab')
 
 
 class ScriptWriter(object):
@@ -487,15 +496,24 @@ def _generate_files(root, tags, file_counter, output_writer):
                 if gen_output and cell['outputs']:
                     output_writer.write(cell, fh)
 
-    # Remove or modify constructs that Jupyter doesn't understand from the JSON
-    j['cells'] = list(get_only_notebook_cells(j['cells']))
-    for cell in j['cells']:
-        cell['source'] = list(patch_jupyter(cell['source'], rl, toc,
-                                            cell['cell_type'] == 'markdown'))
+    def write_jupyter(fname, cells):
+        # Remove or modify constructs that Jupyter doesn't understand
+        # from the JSON
+        j['cells'] = cells
+        for cell in j['cells']:
+            cell['source'] = list(
+                patch_jupyter(cell['source'], rl, toc,
+                              cell['cell_type'] == 'markdown'))
 
-    # Write Jupyter notebook
-    with open('%s.ipynb' % root, 'w') as fh:
-        json.dump(j, fh, indent=2)
+        # Write Jupyter notebook
+        with open(fname, 'w') as fh:
+            json.dump(j, fh, indent=2)
+
+    nb_cells = list(get_only_notebook_cells(j['cells']))
+    colab_cells = list(get_only_colab_cells(j['cells']))
+    write_jupyter('%s.ipynb' % root, nb_cells)
+    if colab_cells != nb_cells:
+        write_jupyter('%s-colab.ipynb' % root, colab_cells)
 
 
 def get_git_branch():

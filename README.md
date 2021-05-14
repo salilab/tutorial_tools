@@ -128,6 +128,10 @@ as the input. (This is still in development.)
 Given a template notebook, `.template.foo.ipynb`, running the script
 `notebook/process_notebook.py foo` will generate:
  - `foo.ipynb`, a standard Jupyter notebook, suitable for general use
+ - `foo-colab.ipynb`, a Jupyter notebook suitable for running on
+   [Google Colaboratory](https://colab.research.google.com/), if any
+   %%nbexclude, %%nbonly, %%colabexclude, %%colabonly directives are
+   present (see below).
  - `foo.py` or `foo.sh`, a simple Python or shell script that can be run
    standalone (to generate a Bash script, install and use a Jupyter Bash kernel
    such as [Calysto Bash](https://github.com/Calysto/calysto_bash))
@@ -158,6 +162,11 @@ regular Jupyter notebooks:
    about a magic it doesn't understand in a code cell).
  - A cell starting with `%%htmlexclude` (or `#%%htmlexclude`) will be
    excluded from the HTML output.
+ - A cell starting with `%%colabexclude` (or `#%%colabexclude`) will be
+   excluded from the Google Colaboratory output.
+ - Similarly, cells marked with `%%nbonly`, `%%htmlonly`, or `%%colabonly`
+   will be included only in the given output (a `#` prefix can also be used
+   here).
 
 The notebook should start with a title and `#mainpage` anchor of the form
 
