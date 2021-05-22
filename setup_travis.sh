@@ -14,13 +14,15 @@ temp_dir=$(mktemp -d)
 
 if [ ${imp_branch} = "develop" ]; then
   IMP_CONDA="imp-nightly"
+  # get conda-forge, not main, packages
+  conda config --remove channels defaults
+  conda config --add channels conda-forge
 else
   IMP_CONDA="imp"
 fi
 
 cd ${temp_dir}
 
-conda update --yes -q conda
 conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib nose ${IMP_CONDA}
 
 rm -rf ${temp_dir}
