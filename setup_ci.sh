@@ -10,7 +10,6 @@ fi
 
 imp_branch=$1
 python_version=$2
-temp_dir=$(mktemp -d)
 
 # get conda-forge, not main, packages
 conda config --remove channels defaults
@@ -21,8 +20,7 @@ else
   IMP_CONDA="imp"
 fi
 
-cd ${temp_dir}
-
-conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib nose ${IMP_CONDA}
-
-rm -rf ${temp_dir}
+conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib ${IMP_CONDA}
+eval "$(conda shell.bash hook)"
+conda activate python${python_version}
+pip install pytest-cov coverage pytest-flake8
