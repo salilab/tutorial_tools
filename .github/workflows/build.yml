@@ -24,6 +24,4 @@ jobs:
     - name: Test
       run: |
         nosetests --exe --with-coverage --cover-branches test
-    - name: Upload coverage to codecov
-      run: |
-        bash <(curl -s https://codecov.io/bash)
+    - uses: codecov/codecov-action@v1
