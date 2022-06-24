@@ -17,7 +17,7 @@ import urllib.request
 
 
 # Latest IMP stable release
-IMP_STABLE_RELEASE = '2.16.0'
+IMP_STABLE_RELEASE = '2.17.0'
 
 # Path to doxygen directory (containing doxygen inputs)
 DOXDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
