@@ -207,7 +207,7 @@ def patch_jupyter(source, rl, toc, is_markdown):
 
 
 _triple_backtick_re = re.compile('```(\S+)')
-def write_cell(cell, fh):
+def write_cell(cell, fh, strip_magic=False):
     all_contents = []
     def tb_sub(m):
         # Jupyter markdown expects a language name, e.g. ```python
@@ -223,6 +223,9 @@ def write_cell(cell, fh):
             return []
         if (not re.match('#?%%(html|nb|colab)(exclude|only)', s)
             and not s.startswith('%matplotlib')):
+            # Display !foxs as foxs and %cd as cd in .md output
+            if strip_magic and (s.startswith('!') or s.startswith('%')):
+                s = s[1:]
             contents = _file_link_re.sub('\\1.html', s)
             contents = _triple_backtick_re.sub(tb_sub, contents)
             fh.write(contents)
@@ -491,7 +494,7 @@ def _generate_files(root, tags, file_counter, output_writer):
                 fh.write('\n')
             elif cell['cell_type'] == 'code':
                 fh.write('\\code{.py}\n')
-                write_cell(cell, fh)
+                write_cell(cell, fh, strip_magic=True)
                 fh.write('\\endcode\n')
                 if gen_output and cell['outputs']:
                     output_writer.write(cell, fh)
