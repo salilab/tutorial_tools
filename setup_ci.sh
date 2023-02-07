@@ -20,9 +20,7 @@ else
   IMP_CONDA="imp"
 fi
 
-# PMI does not yet work with matplotlib 3.6, due to the removal of
-# FigureCanvas.set_window_title()
-conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy 'matplotlib<3.6' ${IMP_CONDA}
+conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib ${IMP_CONDA}
 eval "$(conda shell.bash hook)"
 conda activate python${python_version}
 
