@@ -14,9 +14,12 @@ def import_make_docs():
     make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
     name = os.path.splitext(make_docs)[0]
     try:
-        import importlib.machinery
-        return importlib.machinery.SourceFileLoader(name,
-                                                    make_docs).load_module()
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(name, make_docs)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
     except ImportError:
         import imp
         return imp.load_source(name, make_docs)
