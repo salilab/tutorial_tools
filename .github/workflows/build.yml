@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
-        python-version: [2.7, 3.7, 3.8, 3.9]
+        os: [ubuntu-22.04]
+        python-version: [2.7, 3.7, 3.10, 3.11]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -20,8 +20,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install coverage nose
+        pip install pytest-cov
     - name: Test
       run: |
-        nosetests --exe --with-coverage --cover-branches test
-    - uses: codecov/codecov-action@v1
+        pytest --cov=. --cov-branch --cov-report=xml -v test/test*.py
+    - uses: codecov/codecov-action@v3
