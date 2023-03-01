@@ -23,7 +23,7 @@ jobs:
         pip install pytest-cov
     - name: Test
       run: |
-        pytest --cov=. --cov-branch --cov-report=xml -v test/test*.py
+        pytest --cov=. --cov-branch --cov-report=term --cov-report=xml -v test/test*.py
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
