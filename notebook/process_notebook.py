@@ -705,6 +705,12 @@ def fix_menu_links(imp_version):
         fh.write(contents.replace('nightly', imp_version))
 
 
+def fix_md_html_files():
+    """Some versions of doxygen add an md_ prefix to some files: remove it"""
+    for html in glob.glob("html/md_*.html"):
+        os.rename(html, html.replace('/md_', '/').replace('__', '_'))
+
+
 def add_html_links(branch):
     license_link = get_license_link()
     repo = get_git_repo()
@@ -731,6 +737,7 @@ def main():
         g.generate_files(f, output_writer=cow)
     make_doxyfile(args.filename, tags)
     run_doxygen()
+    fix_md_html_files()
     add_html_links(branch)
     fix_menu_links(imp_version)
 
