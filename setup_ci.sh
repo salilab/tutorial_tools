@@ -20,7 +20,13 @@ else
   IMP_CONDA="imp"
 fi
 
-conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib ${IMP_CONDA}
+if [ ${python_version} = "2.7" ]; then
+  pip="pip<=19.3.1"
+else
+  pip="pip"
+fi
+
+conda create --yes -q -n python${python_version} -c salilab python=${python_version} scipy matplotlib ${pip} ${IMP_CONDA}
 eval "$(conda shell.bash hook)"
 conda activate python${python_version}
 
