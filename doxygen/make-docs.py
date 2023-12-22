@@ -29,7 +29,7 @@ except ImportError:
     from urllib2 import urlopen
 
 # Latest IMP stable release
-IMP_STABLE_RELEASE = '2.19.0'
+IMP_STABLE_RELEASE = '2.20.0'
 
 # Absolute path to the top of the repository
 TOPDIR = os.path.abspath('..')
