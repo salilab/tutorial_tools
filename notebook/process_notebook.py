@@ -716,7 +716,7 @@ def add_html_links(branch):
     repo = get_git_repo()
     pagemap = get_page_map()
     for html in glob.glob("html/*.html"):
-        if html != 'html/pages.html':
+        if html != 'html/pages.html' and html != 'html/doxygen_crawl.html':
             patch_html(html, repo, pagemap[html], branch, license_link)
 
 
