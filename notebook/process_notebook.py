@@ -206,7 +206,7 @@ def patch_jupyter(source, rl, toc, is_markdown):
                 yield c
 
 
-_triple_backtick_re = re.compile('```(\S+)')
+_triple_backtick_re = re.compile(r'```(\S+)')
 def write_cell(cell, fh, strip_magic=False):
     all_contents = []
     def tb_sub(m):
