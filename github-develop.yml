@@ -17,8 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [2.7, 3.9]
-        imp-branch: [develop]
+        python-version: ["3.12"]
+        imp-branch: [main, develop]
+        include:
+        - os: [ubuntu-latest]
+          python-version: "2.7"
+          imp-branch: main
     runs-on: ${{ matrix.os }}
 
     steps:
