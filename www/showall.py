@@ -8,7 +8,7 @@ import glob
 import json
 import yaml
 
-IMP_STABLE_RELEASE = '2.20.2'
+IMP_STABLE_RELEASE = '2.21.0'
 
 
 def _filter_repo_name(name):
