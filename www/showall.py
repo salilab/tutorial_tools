@@ -100,6 +100,8 @@ from source code</a> from the git <tt>develop</tt> branch.
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/tabs.css" rel="stylesheet" type="text/css"/>
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/doxygen.css" rel="stylesheet" type="text/css"/>
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/salilab-doxygen.css" rel="stylesheet" type="text/css"/>
+<link href="//integrativemodeling.org/fontawesome6/css/fontawesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="//integrativemodeling.org/fontawesome6/css/brands.min.css" rel="stylesheet" type="text/css"/>
 <link href="//integrativemodeling.org/imp.css" rel="stylesheet" type="text/css"/>
 <script type='text/javascript'>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -151,6 +153,7 @@ from source code</a> from the git <tt>develop</tt> branch.
       <li><a href="//integrativemodeling.org/%(stable)s/doc/manual/">IMP Manual</a></li>
       <li><a href="//integrativemodeling.org/%(stable)s/doc/ref/">Reference Guide</a></li>
       <li><a href="//integrativemodeling.org/tutorials/">Tutorial Index</a></li>
+      <li><a href="https://github.com/salilab/tutorial_tools/blob/main/www/showall.py"><i class="fab fa-github"></i> Edit on GitHub</a></li>
     </ul>
   </div>
 </div>
