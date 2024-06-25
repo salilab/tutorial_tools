@@ -22,7 +22,7 @@ def _filter_repo_name(name):
     return name
 
 
-class Tutorial(object):
+class Tutorial:
     def __init__(self, name, metadata):
         self.name, self.metadata = name, metadata
         self._deps = frozenset(_filter_repo_name(x)
@@ -41,7 +41,7 @@ class Tutorial(object):
             return len(self._deps) < len(other._deps)
 
 
-class Page(object):
+class Page:
     def display(self):
         self.print_header()
         self.show_tutorials()
