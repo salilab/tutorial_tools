@@ -85,6 +85,8 @@ def make_doxyfile(tags):
                 line = 'GENERATE_LATEX = NO\n'
             elif line.startswith('USE_MATHJAX '):
                 line = 'USE_MATHJAX = YES\n'
+            elif line.startswith('MATHJAX_RELPATH '):
+                line = 'MATHJAX_RELPATH = //integrativemodeling.org/mathjax\n'
             elif line.startswith('TAGFILES '):
                 line = 'TAGFILES = %s\n' % tagfiles
             fh.write(line)
