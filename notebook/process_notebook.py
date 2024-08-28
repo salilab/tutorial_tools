@@ -594,6 +594,8 @@ def make_doxyfile(root, tags):
                 line = 'HTML_FOOTER = "%s/footer.html"\n' % DOXDIR
             elif line.startswith('GENERATE_LATEX '):
                 line = 'GENERATE_LATEX = NO\n'
+            elif line.startswith('USE_MATHJAX '):
+                line = 'USE_MATHJAX = YES\n'
             elif line.startswith('AUTOLINK_SUPPORT '):
                 # Don't make links from the text (only from code samples)
                 line = 'AUTOLINK_SUPPORT = NO\n'

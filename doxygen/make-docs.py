@@ -83,6 +83,8 @@ def make_doxyfile(tags):
                 line = 'HTML_FOOTER = %s/footer.html\n' % DOXDIR
             elif line.startswith('GENERATE_LATEX '):
                 line = 'GENERATE_LATEX = NO\n'
+            elif line.startswith('USE_MATHJAX '):
+                line = 'USE_MATHJAX = YES\n'
             elif line.startswith('TAGFILES '):
                 line = 'TAGFILES = %s\n' % tagfiles
             fh.write(line)
