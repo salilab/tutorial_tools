@@ -654,11 +654,12 @@ def get_page_map():
 
 
 def get_license():
-    fname = os.path.join(TOPDIR, 'LICENSE')
-    if not os.path.exists(fname):
-        return b''
-    with open(fname, 'rb') as fh:
-        return fh.read()
+    for fname in ('LICENSE', 'LICENSE.txt'):
+        full_fname = os.path.join(TOPDIR, fname)
+        if os.path.exists(full_fname):
+            with open(full_fname, 'rb') as fh:
+                return fh.read()
+    return b''
 
 
 def get_license_link():
