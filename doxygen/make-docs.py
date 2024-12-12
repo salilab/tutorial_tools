@@ -23,10 +23,7 @@ import os
 import glob
 import re
 import argparse
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+from urllib.request import urlopen
 
 # Latest IMP stable release
 IMP_STABLE_RELEASE = '2.22.0'

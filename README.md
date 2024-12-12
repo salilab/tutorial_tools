@@ -70,9 +70,8 @@ directory of your tutorial. For the `main` branch of your tutorial, use
 For other branches such as `develop`, use `github-develop.yml` instead.
 
 The `build.yml` config file will ensure the tutorial tests
-get run every time the tutorial is changed (pushed to GitHub) using both
-Python 2 and Python 3, and for the current IMP nightly build and also the
-latest stable release (if applicable).
+get run every time the tutorial is changed (pushed to GitHub) for the current
+IMP nightly build and also the latest stable release (if applicable).
 
 ## Tutorial text
 

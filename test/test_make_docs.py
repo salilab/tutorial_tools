@@ -11,18 +11,14 @@ import shutil
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 def import_make_docs():
+    import importlib.util
     make_docs = os.path.join(TOPDIR, "doxygen", "make-docs.py")
     name = os.path.splitext(make_docs)[0]
-    try:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(name, make_docs)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[name] = module
-        spec.loader.exec_module(module)
-        return module
-    except ImportError:
-        import imp
-        return imp.load_source(name, make_docs)
+    spec = importlib.util.spec_from_file_location(name, make_docs)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
 
 # Python script to simulate running doxygen
 DOXYGEN = """
