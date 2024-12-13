@@ -135,14 +135,23 @@ class RefLinks(object):
         # to see if the file linked to matches the name of the base class.
         if clsbase:
             base_suffix = clsbase.replace('::', '_1_1') + '.html'
+        # If a class is multiply derived, even this workaround might not
+        # work. In this case, parse the filename itself to get the name of
+        # the ultimate base class.
+        def _get_class_for_file(f):
+            if f.startswith('class') and f.endswith('.html'):
+                return f[5:-5].replace('_1_1', '::').replace('__', '_')
         for meth in cls:
             if (meth.tag == 'member' and meth.attrib.get('kind') == 'function'):
                 methname = meth.find('name').text
                 anchorfile = meth.find('anchorfile').text
                 url = (urltop + anchorfile + '#' + meth.find('anchor').text)
                 self.refs[clsname + '::' + methname] = url
+                cls_for_file = _get_class_for_file(anchorfile)
                 if clsbase and anchorfile.endswith(base_suffix):
                     self.refs[clsbase + '::' + methname] = url
+                elif cls_for_file and cls_for_file != clsname:
+                    self.refs[cls_for_file + '::' + methname] = url
 
     def _replace_backtick_link(self, m):
         txt = m.group(1)
