@@ -4,6 +4,8 @@
 
 name: build
 
+permissions: read-all
+
 on:
   push:
   pull_request:
@@ -17,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.12"]
+        python-version: ["3.13"]
         imp-branch: [main, develop]
     runs-on: ${{ matrix.os }}
 
