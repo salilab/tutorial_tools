@@ -200,7 +200,8 @@ if __name__ == '__main__':
         if sys.argv[0].startswith('./'):
             raise
         else:
-            email_error('ben@salilab.org', 'root@salilab.org', sys.exc_info())
+            email_error('benjamin.webb@ucsf.edu', 'salilab-system@ucsf.edu',
+                        sys.exc_info())
             print(cgitb.reset())
             print("<p>Sorry, but an error was detected. We have been " \
                   "notified of the problem and will fix it shortly.</p>")
