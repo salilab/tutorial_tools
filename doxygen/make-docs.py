@@ -17,7 +17,6 @@ doc/html/ subdirectory.
 The documentation can be rebuilt by just running 'doxygen Doxyfile'.
 """
 
-from __future__ import print_function
 import subprocess
 import os
 import glob

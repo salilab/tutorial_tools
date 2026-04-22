@@ -22,7 +22,6 @@ def import_make_docs():
 
 # Python script to simulate running doxygen
 DOXYGEN = """
-from __future__ import print_function
 import os
 import sys
 
