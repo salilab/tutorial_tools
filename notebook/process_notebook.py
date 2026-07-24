@@ -202,8 +202,11 @@ def patch_jupyter(source, rl, toc, is_markdown):
     if is_markdown:
         for c in source:
             if '[TOC]' in c:
-                for md in toc.get_markdown():
-                    yield md
+                # Exclude table of contents from notebook output. Both
+                # Google Colab and Jupyter have their own TOCs.
+                pass
+#               for md in toc.get_markdown():
+#                   yield md
             else:
                 if not non_jupyter_constructs.match(c):
                     nc = re.sub(jupyter_anchor_re, '<a id="\\1"></a>', c)
