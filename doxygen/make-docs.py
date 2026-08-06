@@ -25,7 +25,7 @@ import argparse
 from urllib.request import urlopen
 
 # Latest IMP stable release
-IMP_STABLE_RELEASE = '2.24.0'
+IMP_STABLE_RELEASE = '2.25.0'
 
 # Absolute path to the top of the repository
 TOPDIR = os.path.abspath('..')
