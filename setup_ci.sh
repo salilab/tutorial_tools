@@ -29,4 +29,7 @@ conda create --yes -q -n python${python_version} -c salilab python=${python_vers
 eval "$(conda shell.bash hook)"
 conda activate python${python_version}
 
+# Don't try to run with MPI even if mpich is available
+echo "import pathlib, IMP.mpi; m=pathlib.Path(IMP.mpi.__file__).parent; m.rename(m.with_stem('mpi.bak'))" | python3
+
 pip install pytest-cov coverage pytest-flake8 'pytest<9'
