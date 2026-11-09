@@ -19,20 +19,27 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.13"]
+        python-version: ["3.14"]
         imp-branch: [main, develop]
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
     - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v4
+      with:
+        miniforge-version: latest
+        channels: conda-forge, salilab
+        conda-remove-defaults: "true"
+        python-version: ${{ matrix.python-version }}
+    - name: Install packages
       run: |
-        support/tutorial_tools/setup_ci.sh ${{ matrix.imp-branch }} ${{ matrix.python-version }}
+        support/tutorial_tools/setup_ci.sh ${{ matrix.imp-branch }}
     - name: Test
       run: |
         eval "$(conda shell.bash hook)"
-        conda activate python${{ matrix.python-version }}
+        conda activate test
         conda install --yes -q scikit-learn
         pytest support/test/*.py
