@@ -97,6 +97,7 @@ from source code</a> from the git <tt>develop</tt> branch.
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/tabs.css" rel="stylesheet" type="text/css"/>
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/doxygen.css" rel="stylesheet" type="text/css"/>
 <link href="//integrativemodeling.org/%(stable)s/doc/manual/salilab-doxygen.css" rel="stylesheet" type="text/css"/>
